@@ -1,0 +1,71 @@
+[
+  {
+    "users": [
+      {
+        "id": 1,
+        "name": "User1",
+        "img": "https://img.etnews.com/news/article/2023/07/05/news-p.v1.20230705.221bf0c27b4642719a510aa3eeca9e6f_P2.jpg"
+      },
+      {
+        "id": 2,
+        "name": "User2",
+        "img": "https://img.etnews.com/news/article/2023/07/05/news-p.v1.20230705.221bf0c27b4642719a510aa3eeca9e6f_P2.jpg"
+      }
+    ],
+    "roomId": "room_id_1",
+    "comments": {
+      "1": {
+        "message": "Hello!"
+      },
+      "2": {
+        "message": "Hi there!"
+      }
+    }
+  },
+  {
+    "users": [
+      {
+        "id": 3,
+        "name": "User3",
+        "img": "https://img.etnews.com/news/article/2023/07/05/news-p.v1.20230705.221bf0c27b4642719a510aa3eeca9e6f_P2.jpg"
+      },
+      {
+        "id": 4,
+        "name": "User4",
+        "img": "https://img.etnews.com/news/article/2023/07/05/news-p.v1.20230705.221bf0c27b4642719a510aa3eeca9e6f_P2.jpg"
+      }
+    ],
+    "roomId": "room_id_2",
+    "comments": {
+      "1": {
+        "message": "Hey!"
+      },
+      "2": {
+        "message": "How are you?"
+      }
+    }
+  },
+  {
+    "users": [
+      {
+        "id": 5,
+        "name": "User5",
+        "img": "https://img.etnews.com/news/article/2023/07/05/news-p.v1.20230705.221bf0c27b4642719a510aa3eeca9e6f_P2.jpg"
+      },
+      {
+        "id": 6,
+        "name": "User6",
+        "img": "https://img.etnews.com/news/article/2023/07/05/news-p.v1.20230705.221bf0c27b4642719a510aa3eeca9e6f_P2.jpg"
+      }
+    ],
+    "roomId": "room_id_3",
+    "comments": {
+      "1": {
+        "message": "Hello!"
+      },
+      "2": {
+        "message": "Hi there!"
+      }
+    }
+  }
+]
