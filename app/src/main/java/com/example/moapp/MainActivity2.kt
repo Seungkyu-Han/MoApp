@@ -12,8 +12,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.moapp.databinding.ActivityMain2Binding
 import com.example.moapp.fragment.ChatFragment
+import com.example.moapp.fragment.FriendsFragment
 import com.example.moapp.fragment.ThreeFragment
-import com.example.moapp.fragment.TwoFragment
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -23,7 +23,7 @@ class MainActivity2 : AppCompatActivity() {
         FragmentStateAdapter(activity) {
         val fragments: List<Fragment>
         init {
-            fragments = listOf(ChatFragment(), TwoFragment(), ThreeFragment())
+            fragments = listOf(FriendsFragment(), ChatFragment(), ThreeFragment())
         }
         override fun getItemCount(): Int = fragments.size
         override fun createFragment(position: Int): Fragment = fragments[position]

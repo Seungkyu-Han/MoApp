@@ -68,11 +68,7 @@ class MyDecoration(val context: Context): RecyclerView.ItemDecoration() {
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        val index = parent.getChildAdapterPosition(view) + 1
-        if (index % 3 == 0) // left, top, right, bottom
-            outRect.set(10, 10, 10, 60)
-        else
-            outRect.set(10, 10, 10, 0)
+        outRect.set(10, 10, 10, 0)
         view.setBackgroundColor(Color.parseColor("#A4C1EE"))
         ViewCompat.setElevation(view, 20.0f)
     }
