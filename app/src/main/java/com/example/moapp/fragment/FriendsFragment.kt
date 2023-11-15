@@ -25,7 +25,7 @@ import java.io.InputStreamReader
 
 class FriendsViewHolder(val binding: ItemFriendsBinding) :
     RecyclerView.ViewHolder(binding.root)
-class FriendsAdapter(val userModels: List<User>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class FriendsAdapter(var userModels: List<User>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // 항목의 개수를 판단하기 위해 자동 호출
     override fun getItemCount(): Int {
         return userModels.size
@@ -54,6 +54,10 @@ class FriendsAdapter(val userModels: List<User>) : RecyclerView.Adapter<Recycler
             .load(userModels[position].img)
             .into(binding.friendsItemImageview)
     }
+    fun updateData(newList: List<User>) {
+        userModels = newList
+        notifyDataSetChanged()
+    }
 }
 
 class FriendsDecoration(val context: Context): RecyclerView.ItemDecoration() {
@@ -72,6 +76,8 @@ class FriendsDecoration(val context: Context): RecyclerView.ItemDecoration() {
 }
 
 class FriendsFragment : Fragment() {
+    private lateinit var adapter: FriendsAdapter
+    private lateinit var originalUserModel: List<User>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -83,12 +89,17 @@ class FriendsFragment : Fragment() {
         val json = loadJsonFromAsset(requireContext(), "friends_data.json")
 
         // User 객체로 변환
-        val userList: List<User> = Gson().fromJson(json, object : TypeToken<List<User>>() {}.type)
+        originalUserModel = Gson().fromJson<List<User>>(
+            json,
+            object : TypeToken<List<User>>() {}.type
+        ) ?: emptyList()
 
         // 리사이클러 뷰에 LayoutManager, Adapter 적용
         val layoutManager = LinearLayoutManager(activity)
         binding.recyclerView.layoutManager = layoutManager
-        val adapter = FriendsAdapter(userList)
+
+        // 어뎁터 초기화
+        adapter = FriendsAdapter(originalUserModel)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.addItemDecoration(FriendsDecoration(activity as Context))
         return binding.root
@@ -102,6 +113,15 @@ class FriendsFragment : Fragment() {
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+    fun search(query: String) {
+        // adapter가 초기화되었는지 확인
+        if (::adapter.isInitialized) {
+            val filteredList = originalUserModel.filter { user ->
+                user.name.contains(query, true)
+            }
+            adapter.updateData(filteredList)
         }
     }
 }

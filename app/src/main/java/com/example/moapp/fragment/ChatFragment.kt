@@ -23,7 +23,7 @@ import java.io.InputStreamReader
 
 class MyViewHolder(val binding: ItemChatBinding) :
     RecyclerView.ViewHolder(binding.root)
-class MyAdapter(val chatModels: List<ChatModel>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MyAdapter(var chatModels: List<ChatModel>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // 항목의 개수를 판단하기 위해 자동 호출
     override fun getItemCount(): Int {
         return chatModels.size
@@ -57,6 +57,11 @@ class MyAdapter(val chatModels: List<ChatModel>) : RecyclerView.Adapter<Recycler
             .load(chatModels[position].users[lastUserIndex].img)
             .into(binding.chatItemImageview)
     }
+    // 데이터 업데이트를 위한 메서드
+    fun updateData(newList: List<ChatModel>) {
+        chatModels = newList
+        notifyDataSetChanged()
+    }
 }
 
 class MyDecoration(val context: Context): RecyclerView.ItemDecoration() {
@@ -75,40 +80,34 @@ class MyDecoration(val context: Context): RecyclerView.ItemDecoration() {
 }
 
 class ChatFragment : Fragment() {
+    private lateinit var adapter: MyAdapter
+    private lateinit var originalChatModel: List<ChatModel>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val binding = FragmentChatBinding.inflate(inflater, container, false)
 
         // JSON 파일에서 데이터 로드
         val json = loadJsonFromAsset(requireContext(), "chat_data.json")
 
         // chatModel이 null인 경우 기본값으로 초기화
-        val chatModel = Gson().fromJson<List<ChatModel>>(
+        originalChatModel = Gson().fromJson<List<ChatModel>>(
             json,
             object : TypeToken<List<ChatModel>>() {}.type
         ) ?: emptyList()
 
-        // chatModel 출력
-        Log.d("ChatFragment", "ChatModel: $chatModel")
-
         // 리사이클러 뷰에 LayoutManager, Adapter 적용
         val layoutManager = LinearLayoutManager(activity)
         binding.recyclerView.layoutManager = layoutManager
-        val adapter = MyAdapter(chatModel)
+
+        // 어댑터 초기화
+        adapter = MyAdapter(originalChatModel)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.addItemDecoration(MyDecoration(activity as Context))
         return binding.root
-//        val recyclerView = view.findViewById<RecyclerView>(R.id.chatfragment_recyclerview)
-//        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//
-//        // RecyclerViewAdapter에 chatModel 전달
-//        recyclerView.adapter = RecyclerViewAdapter(chatModel)
-//
-//        return view
     }
     private fun loadJsonFromAsset(context: Context, fileName: String): String? {
         return try {
@@ -120,4 +119,13 @@ class ChatFragment : Fragment() {
             null
         }
     }
+
+    // 검색 기능을 처리하는 메서드
+    fun search(query: String) {
+        val filteredList = originalChatModel.filter { chat ->
+            chat.roomId.contains(query, true)
+        }
+        adapter.updateData(filteredList)
+    }
+
 }
