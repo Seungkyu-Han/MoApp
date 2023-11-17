@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -58,6 +59,20 @@ class FriendsAdapter(var userModels: List<User>) : RecyclerView.Adapter<Recycler
         Glide.with(binding.friendsItemImageview.context)
             .load(userModels[position].img)
             .into(binding.friendsItemImageview)
+
+        // 아이템 클릭 시 프로필 팝업 표시
+        holder.itemView.setOnClickListener {
+            val fragmentManager = (holder.itemView.context as FragmentActivity).supportFragmentManager
+            val profileFragment = ProfileFragment()
+
+            val args = Bundle()
+            args.putInt(ProfileFragment.ARG_USER_ID, userModels[position].id)
+            args.putString(ProfileFragment.ARG_USER_NAME, userModels[position].name)
+            args.putString(ProfileFragment.ARG_USER_IMG, userModels[position].img)
+            profileFragment.arguments = args
+
+            profileFragment.show(fragmentManager, ProfileFragment::class.java.simpleName)
+        }
     }
     fun updateData(newList: List<User>) {
         userModels = newList
