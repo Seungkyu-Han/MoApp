@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.moapp.controller.ApiCallback
+import com.example.moapp.controller.ApiRequestTask
 import com.example.moapp.databinding.FragmentChatBinding
 import com.example.moapp.databinding.ItemChatBinding
 import com.example.moapp.databinding.ItemFriendsBinding
@@ -20,6 +22,9 @@ import com.example.moapp.model.ChatModel
 import com.example.moapp.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
@@ -75,9 +80,10 @@ class FriendsDecoration(val context: Context): RecyclerView.ItemDecoration() {
     }
 }
 
-class FriendsFragment : Fragment() {
+class FriendsFragment : Fragment(), ApiCallback {
     private lateinit var adapter: FriendsAdapter
     private lateinit var originalUserModel: List<User>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,43 +91,110 @@ class FriendsFragment : Fragment() {
     ): View? {
         val binding = FragmentChatBinding.inflate(inflater, container, false)
 
-        // JSON 파일에서 데이터 로드
-        val json = loadJsonFromAsset(requireContext(), "friends_data.json")
-
-        // User 객체로 변환
-        originalUserModel = Gson().fromJson<List<User>>(
-            json,
-            object : TypeToken<List<User>>() {}.type
-        ) ?: emptyList()
-
-        // 리사이클러 뷰에 LayoutManager, Adapter 적용
-        val layoutManager = LinearLayoutManager(activity)
-        binding.recyclerView.layoutManager = layoutManager
-
         // 어뎁터 초기화
-        adapter = FriendsAdapter(originalUserModel)
+        adapter = FriendsAdapter(emptyList())
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.addItemDecoration(FriendsDecoration(activity as Context))
+
+        // 리사이클러 뷰에 LayoutManager 적용
+        binding.recyclerView.layoutManager = LinearLayoutManager(activity)
+
+        // JSON 파일에서 데이터 로드
+        fetchDataFromApi()
+
         return binding.root
     }
 
-    private fun loadJsonFromAsset(context: Context, fileName: String): String? {
-        return try {
-            val inputStream = context.assets.open(fileName)
-            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            bufferedReader.use { it.readText() }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+    private fun fetchDataFromApi() {
+        val apiUrl = "http://52.78.87.18:8080/api/friend/friend"
+        val token = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U" // 여기에 실제 토큰을 넣어주세요
+
+        val headers = mapOf(
+            "accept" to "*/*",
+            "Authorization" to "Bearer $token"
+        )
+
+        val apiRequestTask = ApiRequestTask(this)
+        apiRequestTask.execute(apiUrl, headers)
+    }
+
+    override fun onSuccess(response: String?) {
+        GlobalScope.launch(Dispatchers.Main) {
+            response?.let {
+                // API 응답을 처리하는 코드
+                val userList = Gson().fromJson<List<User>>(
+                    response,
+                    object : TypeToken<List<User>>() {}.type
+                ) ?: emptyList()
+                originalUserModel = userList
+                adapter.updateData(userList)
+            }
         }
     }
+
+    override fun onError(error: String) {
+        // 에러 처리
+        Log.e("FriendsFragment", "API request error: $error")
+    }
+
     fun search(query: String) {
-        // adapter가 초기화되었는지 확인
-        if (::adapter.isInitialized) {
-            val filteredList = originalUserModel.filter { user ->
-                user.name.contains(query, true)
-            }
-            adapter.updateData(filteredList)
+        val filteredList = originalUserModel.filter { user ->
+            user.name.contains(query, true)
         }
+        adapter.updateData(filteredList)
     }
 }
+
+
+// 정적 json
+//class FriendsFragment : Fragment() {
+//    private lateinit var adapter: FriendsAdapter
+//    private lateinit var originalUserModel: List<User>
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View? {
+//        val binding = FragmentChatBinding.inflate(inflater, container, false)
+//
+//        // JSON 파일에서 데이터 로드
+//        val json = loadJsonFromAsset(requireContext(), "friends_data.json")
+//
+//        // User 객체로 변환
+//        originalUserModel = Gson().fromJson<List<User>>(
+//            json,
+//            object : TypeToken<List<User>>() {}.type
+//        ) ?: emptyList()
+//
+//        // 리사이클러 뷰에 LayoutManager, Adapter 적용
+//        val layoutManager = LinearLayoutManager(activity)
+//        binding.recyclerView.layoutManager = layoutManager
+//
+//        // 어뎁터 초기화
+//        adapter = FriendsAdapter(originalUserModel)
+//        binding.recyclerView.adapter = adapter
+//        binding.recyclerView.addItemDecoration(FriendsDecoration(activity as Context))
+//        return binding.root
+//    }
+//
+//    private fun loadJsonFromAsset(context: Context, fileName: String): String? {
+//        return try {
+//            val inputStream = context.assets.open(fileName)
+//            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+//            bufferedReader.use { it.readText() }
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            null
+//        }
+//    }
+//    fun search(query: String) {
+//        // adapter가 초기화되었는지 확인
+//        if (::adapter.isInitialized) {
+//            val filteredList = originalUserModel.filter { user ->
+//                user.name.contains(query, true)
+//            }
+//            adapter.updateData(filteredList)
+//        }
+//    }
+//
+//}
