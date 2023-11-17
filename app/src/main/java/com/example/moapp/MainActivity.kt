@@ -10,6 +10,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d("park", "KeyHash: ${Utility.getKeyHash(this)}")
+        val token = PrefApp.prefs.getString("accessToken", "defalut")
+        Log.d("park", token)
     }
 }
