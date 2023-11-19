@@ -10,18 +10,18 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class SearchController(private val callback: SearchApiCallback) {
+class PlusFriendController(private val callback: PlusFriendApiCallback) {
 
     fun execute(urlString: String, headers: Map<String, String> = emptyMap()) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 val result = makeApiCall(urlString, headers)
                 withContext(Dispatchers.Main) {
-                    callback.onSuccessSearch(result)
+                    callback.onSuccessPlus(result)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    callback.onErrorSearch("Error occurred during API request.")
+                    callback.onErrorPlus("Error occurred during API request.")
                 }
             }
         }
@@ -50,7 +50,7 @@ class SearchController(private val callback: SearchApiCallback) {
     }
 }
 
-interface SearchApiCallback {
-    fun onSuccessSearch(response: String?)
-    fun onErrorSearch(error: String)
+interface PlusFriendApiCallback {
+    fun onSuccessPlus(response: String?)
+    fun onErrorPlus(error: String)
 }
