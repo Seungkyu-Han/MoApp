@@ -17,17 +17,13 @@ import com.bumptech.glide.Glide
 import com.example.moapp.controller.ApiCallback
 import com.example.moapp.controller.ApiRequestTask
 import com.example.moapp.databinding.FragmentChatBinding
-import com.example.moapp.databinding.ItemChatBinding
 import com.example.moapp.databinding.ItemFriendsBinding
-import com.example.moapp.model.ChatModel
 import com.example.moapp.model.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 class FriendsViewHolder(val binding: ItemFriendsBinding) :
     RecyclerView.ViewHolder(binding.root)
@@ -121,7 +117,7 @@ class FriendsFragment : Fragment(), ApiCallback {
 
     private fun fetchDataFromApi() {
         val apiUrl = "http://52.78.87.18:8080/api/friend/friend"
-        val token = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U" // 여기에 실제 토큰을 넣어주세요
+        val token = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"
 
         val headers = mapOf(
             "accept" to "*/*",

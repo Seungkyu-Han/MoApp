@@ -1,5 +1,6 @@
 package com.example.moapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,7 +14,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.moapp.databinding.ActivityMain2Binding
 import com.example.moapp.fragment.ChatFragment
 import com.example.moapp.fragment.FriendsFragment
-import com.example.moapp.fragment.ThreeFragment
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -24,7 +24,7 @@ class MainActivity2 : AppCompatActivity() {
         FragmentStateAdapter(activity) {
         val fragments: List<Fragment>
         init {
-            fragments = listOf(FriendsFragment(), ChatFragment(), ThreeFragment())
+            fragments = listOf(FriendsFragment(),  ChatFragment()) //FriendRequestsFragment()
         }
         override fun getItemCount(): Int = fragments.size
         override fun createFragment(position: Int): Fragment = fragments[position]
@@ -70,6 +70,17 @@ class MainActivity2 : AppCompatActivity() {
                 return true
             }
         })
+        // 친구 추가 버튼을 추가
+        val addFriendMenuItem = menu.findItem(R.id.menu_add_friend)
+        addFriendMenuItem.setOnMenuItemClickListener {
+            // 친구 추가 버튼 클릭 시 PlusFriendActivity로 이동
+            val intent = Intent(this, PlusFriendActivity::class.java)
+            startActivity(intent)
+            true
+        }
+
+
+
         return true
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
