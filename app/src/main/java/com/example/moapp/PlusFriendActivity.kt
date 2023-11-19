@@ -15,6 +15,7 @@ import com.example.moapp.controller.ApiCallback
 import com.example.moapp.controller.ApiRequestTask
 import com.example.moapp.controller.PlusFriendApiCallback
 import com.example.moapp.controller.PlusFriendController
+import com.example.moapp.controller.RejectRequestApiCallback
 import com.example.moapp.controller.SearchApiCallback
 import com.example.moapp.controller.SearchController
 import com.example.moapp.databinding.ActivityPlusFriendBinding
@@ -91,7 +92,7 @@ class FriendRequestAdapter(var userModels: List<User>, private val listener: Fri
 }
 
 class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
-    PlusFriendApiCallback,FriendRequestActionListener {
+    PlusFriendApiCallback, RejectRequestApiCallback, FriendRequestActionListener {
     private lateinit var requestAdapter: FriendRequestAdapter
     private lateinit var originalUserModel: List<User>
 
@@ -221,7 +222,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     }
 
     override fun onSuccessPlus(response: String?){
-        Toast.makeText(this, "친구를 수락했습니다.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "친구 요청을 수락했습니다.", Toast.LENGTH_SHORT).show()
     }
     override fun onErrorPlus(error: String){
         when {
@@ -242,8 +243,38 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
 
     // 친구 거절 버튼 통신
     override fun onRejectFriendRequest(user: User) {
+        val apiUrl = "https://hangang-bike.site/api/friend/add-friend?id=${user.id}"
+        val token =
+            "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"  // 실제 토큰으로 교체
+
+        val headers = mapOf(
+            "accept" to "*/*",
+            "Authorization" to "Bearer $token"
+        )
+
+        val apiRequestTask = PlusFriendController(this)
+        apiRequestTask.execute(apiUrl, headers)
         Log.d("henry", "$user 거절")
     }
 
+    override fun onSuccessReject(response: String?) {
+        Toast.makeText(this, "친구 요청을 거절했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onErrorReject(error: String) {
+        when {
+            error.contains("400") -> {
+                Toast.makeText(this, "잘못된 요청: $error", Toast.LENGTH_SHORT).show()
+            }
+            error.contains("401") -> {
+                Toast.makeText(this, "인증 실패: $error", Toast.LENGTH_SHORT).show()
+            }
+            // 추가적인 오류 처리 로직을 여기에 추가
+            else -> {
+                Toast.makeText(this, "알 수 없는 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+    }
 
 }
