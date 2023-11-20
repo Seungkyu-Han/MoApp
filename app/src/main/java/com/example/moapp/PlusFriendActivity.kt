@@ -16,6 +16,7 @@ import com.example.moapp.controller.ApiRequestTask
 import com.example.moapp.controller.PlusFriendApiCallback
 import com.example.moapp.controller.PlusFriendController
 import com.example.moapp.controller.RejectRequestApiCallback
+import com.example.moapp.controller.RejectRequestController
 import com.example.moapp.controller.SearchApiCallback
 import com.example.moapp.controller.SearchController
 import com.example.moapp.databinding.ActivityPlusFriendBinding
@@ -89,6 +90,10 @@ class FriendRequestAdapter(var userModels: List<User>, private val listener: Fri
         userModels = newList
         notifyDataSetChanged()
     }
+    fun updateData() {
+        notifyDataSetChanged()
+    }
+
 }
 
 class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
@@ -131,9 +136,9 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
         })
     }
 
-    // 요청 받은 친구 리스트 api
+    //--------------- 요청 받은 친구 리스트 api ---------------
     private fun requestFriend() {
-        val apiUrl = "http://52.78.87.18:8080/api/friend/add-friend"
+        val apiUrl = "https://hangang-bike.site/api/friend/add-friend"
         val token =
             "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"  // 실제 토큰으로 교체
 
@@ -167,7 +172,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     }
 
 
-    // 친구 검색 api
+    //--------------- 친구 검색 api ---------------
     private fun searchFriend(query: String) {
         val encodedQuery = URLEncoder.encode(query, "UTF-8")
         val apiUrl = "https://hangang-bike.site/api/friend/add-friend?name=$encodedQuery"
@@ -185,6 +190,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     override fun onSuccessSearch(response: String?) {
         // 성공적인 응답 처리
         Toast.makeText(this, "친구 요청을 보냈습니다", Toast.LENGTH_SHORT).show()
+        requestAdapter.updateData()
     }
 
     override fun onErrorSearch(error: String) {
@@ -205,7 +211,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
         }
     }
 
-    // 친구 수락 버튼 통신
+    //--------------- 친구 수락 버튼 통신 ---------------
     override fun onAcceptFriendRequest(user: User) {
         val apiUrl = "https://hangang-bike.site/api/friend/friend?id=${user.id}"
         val token =
@@ -223,6 +229,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
 
     override fun onSuccessPlus(response: String?){
         Toast.makeText(this, "친구 요청을 수락했습니다.", Toast.LENGTH_SHORT).show()
+        requestAdapter.updateData()
     }
     override fun onErrorPlus(error: String){
         when {
@@ -241,7 +248,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     }
 
 
-    // 친구 거절 버튼 통신
+    //--------------- 친구 거절 버튼 통신 ---------------
     override fun onRejectFriendRequest(user: User) {
         val apiUrl = "https://hangang-bike.site/api/friend/add-friend?id=${user.id}"
         val token =
@@ -252,13 +259,14 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
             "Authorization" to "Bearer $token"
         )
 
-        val apiRequestTask = PlusFriendController(this)
+        val apiRequestTask = RejectRequestController(this)
         apiRequestTask.execute(apiUrl, headers)
         Log.d("henry", "$user 거절")
     }
 
     override fun onSuccessReject(response: String?) {
         Toast.makeText(this, "친구 요청을 거절했습니다.", Toast.LENGTH_SHORT).show()
+        requestAdapter.updateData()
     }
 
     override fun onErrorReject(error: String) {
