@@ -25,8 +25,6 @@ class LoginActivity : AppCompatActivity() {
         val binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val intent = Intent(this, MainActivity::class.java)
-
         val retrofit = Retrofit.Builder().baseUrl("https://hangang-bike.site/")
             .addConverterFactory(GsonConverterFactory.create()).build()
         val service = retrofit.create(RetrofitService::class.java)
@@ -53,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
                                 var result: AccessToken? = response.body()
                                 Log.d("park", "토큰 로그인 성공 ${result?.toString()}")
                                 PrefApp.prefs.setString("accessToken", result?.accessToken.toString())
-                                startActivity(intent)
+                                finish()
                             } else {
                                 Log.e("park", "토큰 로그인 실패, 관리자에게 문의 ${response.errorBody()?.string()}")
                             }
