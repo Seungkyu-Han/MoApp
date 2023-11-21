@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Spinner
 import android.widget.Toast
 import com.example.moapp.PostScheduleResponse
+import com.example.moapp.PrefApp
 import com.example.moapp.RetrofitService
 import com.example.moapp.ScheduleDetail
 import com.example.moapp.databinding.ActivityAddUserScheduleBinding
@@ -20,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class AddUserSchedule : AppCompatActivity() {
     private lateinit var retrofitService: RetrofitService
 
-    private val authToken ="eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTMzMjk2MTc2LCJpYXQiOjE3MDAzNzA0MTAsImV4cCI6MTcwOTAxMDQxMH0.iIS3AS4A72APKr-QOJpS2WDLcXJgiIOxanjBlp3xOqA"
+    private val authToken = PrefApp.prefs.getString("accessToken","default")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

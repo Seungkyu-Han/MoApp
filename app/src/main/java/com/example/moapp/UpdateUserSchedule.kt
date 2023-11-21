@@ -27,7 +27,7 @@ class UpdateUserSchedule : AppCompatActivity() {
     private lateinit var days: Array<String>
     private lateinit var times: Array<String>
 
-    private val authToken ="eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTMzMjk2MTc2LCJpYXQiOjE3MDAzNzA0MTAsImV4cCI6MTcwOTAxMDQxMH0.iIS3AS4A72APKr-QOJpS2WDLcXJgiIOxanjBlp3xOqA"
+    private val authToken = PrefApp.prefs.getString("accessToken","default")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

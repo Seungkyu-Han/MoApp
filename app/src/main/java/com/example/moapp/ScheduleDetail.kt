@@ -35,8 +35,7 @@ class ScheduleDetail : AppCompatActivity() {
     // 2D array to hold cell IDs corresponding to scheduleEvent.id
     private val cellIdTable = Array(25) { IntArray(8) { -1 } }  // init value = -1
 
-    //private val authToken = PrefApp.prefs.getString("accessToken","default")
-    private val authToken ="eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTMzMjk2MTc2LCJpYXQiOjE3MDAzNzA0MTAsImV4cCI6MTcwOTAxMDQxMH0.iIS3AS4A72APKr-QOJpS2WDLcXJgiIOxanjBlp3xOqA"
+    private val authToken = PrefApp.prefs.getString("accessToken","default")
 
     // create a list of 15 colors to display the annotation
     private val colorList = listOf(
