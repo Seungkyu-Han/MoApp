@@ -140,7 +140,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     private fun requestFriend() {
         val apiUrl = "https://hangang-bike.site/api/friend/add-friend"
         val token =
-            "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"  // 실제 토큰으로 교체
+            "${PrefApp.prefs.getString("accessToken", "default")}"
 
         val headers = mapOf(
             "accept" to "*/*",
@@ -177,7 +177,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
         val encodedQuery = URLEncoder.encode(query, "UTF-8")
         val apiUrl = "https://hangang-bike.site/api/friend/add-friend?name=$encodedQuery"
         val token =
-            "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"  // 실제 토큰으로 교체
+            "${PrefApp.prefs.getString("accessToken", "default")}"
 
         val headers = mapOf(
             "accept" to "*/*",
@@ -215,7 +215,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     override fun onAcceptFriendRequest(user: User) {
         val apiUrl = "https://hangang-bike.site/api/friend/friend?id=${user.id}"
         val token =
-            "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"  // 실제 토큰으로 교체
+            "${PrefApp.prefs.getString("accessToken", "default")}"
 
         val headers = mapOf(
             "accept" to "*/*",
@@ -252,7 +252,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
     override fun onRejectFriendRequest(user: User) {
         val apiUrl = "https://hangang-bike.site/api/friend/add-friend?id=${user.id}"
         val token =
-            "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"  // 실제 토큰으로 교체
+            "${PrefApp.prefs.getString("accessToken", "default")}"
 
         val headers = mapOf(
             "accept" to "*/*",
@@ -261,7 +261,7 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
 
         val apiRequestTask = RejectRequestController(this)
         apiRequestTask.execute(apiUrl, headers)
-        Log.d("henry", "$user 거절")
+        Log.d("henry", "${user.id} 거절")
     }
 
     override fun onSuccessReject(response: String?) {

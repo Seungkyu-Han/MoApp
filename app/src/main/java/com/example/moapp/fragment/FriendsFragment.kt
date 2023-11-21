@@ -117,7 +117,7 @@ class FriendsFragment : Fragment(), ApiCallback {
 
     private fun fetchDataFromApi() {
         val apiUrl = "http://52.78.87.18:8080/api/friend/friend"
-        val token = "eyJ0eXBlIjoiYWNjZXNzIiwiYWxnIjoiSFMyNTYifQ.eyJ1c2VySWQiOi0xMTM3NDgxMDA3LCJpYXQiOjE3MDAwNTI0MTAsImV4cCI6MTcwODY5MjQxMH0.Gb1g-_kK8cJPgh1NREZqcHg60RkJewjAVFS56Zmg8_U"
+        val token = "${PrefApp.prefs.getString("accessToken", "default")}"
 
         val headers = mapOf(
             "accept" to "*/*",
