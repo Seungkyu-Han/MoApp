@@ -3,9 +3,11 @@ package com.example.moapp
 import com.kakao.sdk.user.model.User
 import retrofit2.Call
 import retrofit2.Response
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -44,4 +46,29 @@ interface RetrofitService {
         @Header("Authorization") accessToken: String,
         @Query("state") state: Boolean
     ): Call<Unit>
+
+    @GET("/api/user-schedule/schedule")
+    fun getUserSchedule(): Call<GetScheduleResponse>
+
+    @POST("/api/user-schedule/schedule")
+    fun addUserSchedule(
+        @Query("day") day: String,
+        @Query("startTime") startTime: Int,
+        @Query("endTime") endTime: Int,
+        @Query("scheduleName") scheduleName: String
+    ): Call<PostScheduleResponse>
+
+    @PATCH("/api/user-schedule/schedule")
+    fun updateUserSchedule(
+        @Query("id") id: Int,
+        @Query("day") day: String,
+        @Query("startTime") startTime: Int,
+        @Query("endTime") endTime: Int,
+        @Query("scheduleName") scheduleName: String
+    ): Call<PatchScheduleResponse>
+
+    @DELETE("/api/user-schedule/schedule")
+    fun deleteUserSchedule(
+        @Query("id") id: Int
+    ): Call<DeleteScheduleResponse>
 }
