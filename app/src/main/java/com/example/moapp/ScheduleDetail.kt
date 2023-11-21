@@ -17,7 +17,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.moapp_hien.AddUserSchedule
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -97,7 +96,8 @@ class ScheduleDetail : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()   //go back
+        val scheduleIntent = Intent(this, MainActivity::class.java)
+        startActivity(scheduleIntent)
         return true
     }
 

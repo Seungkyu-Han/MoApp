@@ -94,7 +94,8 @@ class UpdateUserSchedule : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()   //go back
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        startActivity(scheduleIntent)
         return true
     }
 

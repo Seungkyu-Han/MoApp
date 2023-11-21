@@ -1,4 +1,4 @@
-package com.example.moapp_hien
+package com.example.moapp
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -75,7 +75,8 @@ class AddUserSchedule : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()   //go back
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        startActivity(scheduleIntent)
         return true
     }
 
