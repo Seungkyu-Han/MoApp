@@ -25,6 +25,9 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingBinding.inflate(layoutInflater)
 
+        supportActionBar?.title = ""
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+
         Log.d("park", "세팅 페이지 실행됨")
         service.getFriendState("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
             object: Callback<Boolean> {
@@ -190,5 +193,10 @@ class SettingActivity : AppCompatActivity() {
         nameCancelBtn.setOnClickListener {
             changeNameDialog.dismiss()
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()   //go back
+        return true
     }
 }
