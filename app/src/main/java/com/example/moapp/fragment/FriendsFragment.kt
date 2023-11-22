@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.moapp.PrefApp
 import com.example.moapp.controller.ApiCallback
 import com.example.moapp.controller.ApiRequestTask
 import com.example.moapp.databinding.FragmentChatBinding
