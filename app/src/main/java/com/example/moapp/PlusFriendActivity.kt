@@ -1,5 +1,6 @@
 package com.example.moapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,24 +12,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.moapp.controller.ApiCallback
-import com.example.moapp.controller.ApiRequestTask
-import com.example.moapp.controller.PlusFriendApiCallback
-import com.example.moapp.controller.PlusFriendController
-import com.example.moapp.controller.RejectRequestApiCallback
-import com.example.moapp.controller.RejectRequestController
-import com.example.moapp.controller.SearchApiCallback
-import com.example.moapp.controller.SearchController
 import com.example.moapp.databinding.ActivityPlusFriendBinding
 import com.example.moapp.databinding.ItemRequestFriendBinding
 import com.example.moapp.fragment.ProfileFragment
-import com.example.moapp.model.User
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.net.URLEncoder
+import okhttp3.OkHttpClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class RequestViewHolder(val binding: ItemRequestFriendBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -37,8 +29,14 @@ interface FriendRequestActionListener {
     fun onRejectFriendRequest(user: User)
 }
 
+interface NavigateToActivityListener {
+    fun navigateToActivity(intent: Intent)
+}
 
-class FriendRequestAdapter(var userModels: List<User>, private val listener: FriendRequestActionListener
+class FriendRequestAdapter(
+    var userModels: List<User>
+, private val listener: FriendRequestActionListener
+, private val navigateToActivityListener: NavigateToActivityListener
 ) : RecyclerView.Adapter<RequestViewHolder>() {
     override fun getItemCount(): Int = userModels.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RequestViewHolder =
@@ -54,7 +52,7 @@ class FriendRequestAdapter(var userModels: List<User>, private val listener: Fri
         val binding = holder.binding
 
         // 데이터 바인딩 및 처리 코드 추가
-        binding.requestItemTextviewId.id = userModels[position].id
+        binding.requestItemTextviewId.text = "id : " + userModels[position].id.toString()
         binding.requestTextviewTitle.text = userModels[position].name
         Glide.with(binding.requestItemImageview.context)
             .load(userModels[position].img)
@@ -77,11 +75,15 @@ class FriendRequestAdapter(var userModels: List<User>, private val listener: Fri
         // 수락 버튼 클릭
         binding.acceptFriendBtn.setOnClickListener {
             listener.onAcceptFriendRequest(userModels[position])
+            val intent = Intent(holder.itemView.context, PlusFriendActivity::class.java)
+            navigateToActivityListener.navigateToActivity(intent)
         }
 
         // 거절 버튼 클릭
         binding.rejectFriendBtn.setOnClickListener {
             listener.onRejectFriendRequest(userModels[position])
+            val intent = Intent(holder.itemView.context, PlusFriendActivity::class.java)
+            navigateToActivityListener.navigateToActivity(intent)
         }
 
     }
@@ -90,31 +92,54 @@ class FriendRequestAdapter(var userModels: List<User>, private val listener: Fri
         userModels = newList
         notifyDataSetChanged()
     }
-    fun updateData() {
-        notifyDataSetChanged()
-    }
-
 }
 
-class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
-    PlusFriendApiCallback, RejectRequestApiCallback, FriendRequestActionListener {
+class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, NavigateToActivityListener {
     private lateinit var requestAdapter: FriendRequestAdapter
     private lateinit var originalUserModel: List<User>
+    private val authToken = PrefApp.prefs.getString("accessToken", "default")
+    private lateinit var retrofitService: RetrofitService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        supportActionBar?.title = "Requested Friend List"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+
         val binding = ActivityPlusFriendBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         // 어뎁터 초기화
-        requestAdapter = FriendRequestAdapter(emptyList(), this)
+        requestAdapter = FriendRequestAdapter(emptyList(), this, this)
         binding.requestRecyclerView.adapter = requestAdapter
 
         // LayoutManager
         binding.requestRecyclerView.layoutManager = LinearLayoutManager(this)
 
+        // initiate retrofit -----------------------------------------------------------
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val original = chain.request()
+
+                // Add headers
+                val requestBuilder = original.newBuilder()
+                    .header("accept", "*/*")
+                    .header("Authorization", "Bearer $authToken")
+
+                val modifiedRequest = requestBuilder.build()
+                chain.proceed(modifiedRequest)
+            }
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://hangang-bike.site/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofitService = retrofit.create(RetrofitService::class.java)
+
         // 요청온 리스트 api 호출
-        requestFriend()
+        requestedFriend()
 
         val searchView = binding.searchView
 
@@ -124,165 +149,127 @@ class PlusFriendActivity : AppCompatActivity(),ApiCallback, SearchApiCallback,
                 if (!query.isNullOrBlank()) {
                     // 검색어가 비어 있지 않으면 검색 함수 호출
                     //searchFriend(query)
-                    searchFriend(query)
+                    addFriend(query)
                 }
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 // 사용자가 검색어를 입력할 때의 동작
                 return true
             }
         })
+
+        setContentView(binding.root)
+
     }
 
     //--------------- 요청 받은 친구 리스트 api ---------------
-    private fun requestFriend() {
-        val apiUrl = "https://hangang-bike.site/api/friend/add-friend"
-        val token =
-            "${PrefApp.prefs.getString("accessToken", "default")}"
-
-        val headers = mapOf(
-            "accept" to "*/*",
-            "Authorization" to "Bearer $token"
-        )
-
-        val apiRequestTask = ApiRequestTask(this)
-        apiRequestTask.execute(apiUrl, headers)
-    }
-
-    override fun onSuccess(response: String?) {
-        // 성공적인 응답 처리
-        GlobalScope.launch(Dispatchers.Main) {
-            response?.let {
-                // API 응답을 처리하는 코드
-                val userList = Gson().fromJson<List<User>>(
-                    response,
-                    object : TypeToken<List<User>>() {}.type
-                ) ?: emptyList()
-                originalUserModel = userList
-                requestAdapter.updateData(userList)
+    private fun requestedFriend() {
+        val call = retrofitService.getRequestFriend()
+        call.enqueue(object : Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                if (response.isSuccessful) {
+                    val userList = response.body()
+                    userList?.let { users ->
+                        // API 응답을 처리하는 코드
+                        originalUserModel = users
+                        requestAdapter.updateData(users)
+                    }
+                } else {
+                    // 에러 처리
+                    Log.e("henry", "requestFriend API request error: ${response.message()}")
+                }
             }
-        }
-    }
 
-    override fun onError(error: String) {
-        // error
-        Log.e("RequestFriends", "API request error: $error")
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                // 에러 처리
+                Log.e("henry", "requestFriend API request failure: ${t.message}")
+            }
+        })
     }
-
 
     //--------------- 친구 검색 api ---------------
-    private fun searchFriend(query: String) {
-        val encodedQuery = URLEncoder.encode(query, "UTF-8")
-        val apiUrl = "https://hangang-bike.site/api/friend/add-friend?name=$encodedQuery"
-        val token =
-            "${PrefApp.prefs.getString("accessToken", "default")}"
-
-        val headers = mapOf(
-            "accept" to "*/*",
-            "Authorization" to "Bearer $token"
-        )
-
-        val apiRequestTask = SearchController(this)
-        apiRequestTask.execute(apiUrl, headers)
-    }
-    override fun onSuccessSearch(response: String?) {
-        // 성공적인 응답 처리
-        Toast.makeText(this, "친구 요청을 보냈습니다", Toast.LENGTH_SHORT).show()
-        requestAdapter.updateData()
-    }
-
-    override fun onErrorSearch(error: String) {
-        // 오류 처리
-        Log.e("PlusFriendActivity", "API request error: $error")
-
-        when {
-            error.contains("400") -> {
-                Toast.makeText(this, "잘못된 요청: $error", Toast.LENGTH_SHORT).show()
+    private fun addFriend(name: String) {
+        val call = retrofitService.postAddFriend(name)
+        call.enqueue(object : Callback<PostAddFriendResponse> {
+            override fun onResponse(call: Call<PostAddFriendResponse>, response: Response<PostAddFriendResponse>) {
+                when (response.code()) {
+                    200, 201 -> {
+                        showToast("${name}님에게 친구 요청을 보냈습니다.")
+                        Log.d("henry", "friend added successfully")
+                    }
+                    //else show error
+                    400 -> showToast("${name}님은 친구 요청을 거절한 상태입니다.")
+                    401 -> showToast("권한 없음")
+                    403 -> showToast("Forbidden")
+                    404 -> showToast("${name}님을 찾을 수 없습니다.")
+                    409 -> showToast("${name}님과 이미 친구 상태입니다.")
+                }
             }
-            error.contains("401") -> {
-                Toast.makeText(this, "인증 실패: $error", Toast.LENGTH_SHORT).show()
+
+            override fun onFailure(call: Call<PostAddFriendResponse>, t: Throwable) {
+                Log.e("henry", "addFriend API request failure: ${t.message}")
             }
-            // 추가적인 오류 처리 로직을 여기에 추가
-            else -> {
-                Toast.makeText(this, "알 수 없는 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
-            }
-        }
+        })
     }
 
     //--------------- 친구 수락 버튼 통신 ---------------
     override fun onAcceptFriendRequest(user: User) {
-        val apiUrl = "https://hangang-bike.site/api/friend/friend?id=${user.id}"
-        val token =
-            "${PrefApp.prefs.getString("accessToken", "default")}"
-
-        val headers = mapOf(
-            "accept" to "*/*",
-            "Authorization" to "Bearer $token"
-        )
-
-        val apiRequestTask = PlusFriendController(this)
-        apiRequestTask.execute(apiUrl, headers)
-        Log.d("henry", "${user.id} 수락")
-    }
-
-    override fun onSuccessPlus(response: String?){
-        Toast.makeText(this, "친구 요청을 수락했습니다.", Toast.LENGTH_SHORT).show()
-        requestAdapter.updateData()
-    }
-    override fun onErrorPlus(error: String){
-        when {
-            error.contains("400") -> {
-                Toast.makeText(this, "잘못된 요청: $error", Toast.LENGTH_SHORT).show()
+        val call = retrofitService.postAcceptFriend(user.id)
+        call.enqueue(object : Callback<PostAcceptFriendResponse> {
+            override fun onResponse(call: Call<PostAcceptFriendResponse>, response: Response<PostAcceptFriendResponse>) {
+                when (response.code()) {
+                    200, 201 -> {
+                        showToast("${user.name}님의 친구 요청을 수락했습니다.")
+                        Log.d("henry", "Add friend successfully")
+                    }
+                    //else show error
+                    400 -> showToast("잘못된 요청입니다.")
+                    401 -> showToast("권한 없음")
+                    403 -> showToast("Forbidden")
+                    404 -> showToast("Not Found")
+                }
             }
-            error.contains("401") -> {
-                Toast.makeText(this, "인증 실패: $error", Toast.LENGTH_SHORT).show()
-            }
-            // 추가적인 오류 처리 로직을 여기에 추가
-            else -> {
-                Toast.makeText(this, "알 수 없는 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
 
+            override fun onFailure(call: Call<PostAcceptFriendResponse>, t: Throwable) {
+                Log.e("henry", "onAcceptFriendRequest API request failure: ${t.message}")
             }
-        }
+        })
     }
 
 
     //--------------- 친구 거절 버튼 통신 ---------------
     override fun onRejectFriendRequest(user: User) {
-        val apiUrl = "https://hangang-bike.site/api/friend/add-friend?id=${user.id}"
-        val token =
-            "${PrefApp.prefs.getString("accessToken", "default")}"
+        val call = retrofitService.deleteRequestedFriend(user.id)
+        call.enqueue(object : Callback<DeleteRequestFriendResponse> {
+            override fun onResponse(call: Call<DeleteRequestFriendResponse>, response: Response<DeleteRequestFriendResponse>) {
+                when (response.code()) {
+                    200, 204 -> {
+                        showToast("${user.name}님의 친구 요청을 거절했습니다.")
+                        Log.d("henry", "Delete friend successfully")
+                    }
+                    //else show error
+                    400 -> showToast("삭제하려는 친구가 존재하지 않거나, 친구 신청관계가 아닙니다.")
+                    401 -> showToast("권한 없음")
+                    403 -> showToast("Forbidden")
+                }
+            }
 
-        val headers = mapOf(
-            "accept" to "*/*",
-            "Authorization" to "Bearer $token"
-        )
-
-        val apiRequestTask = RejectRequestController(this)
-        apiRequestTask.execute(apiUrl, headers)
-        Log.d("henry", "${user.id} 거절")
+            override fun onFailure(call: Call<DeleteRequestFriendResponse>, t: Throwable) {
+                Log.e("henry", "onRejectFriendRequest API request failure: ${t.message}")
+            }
+        })
+    }
+    private fun showToast(message: String) {
+        Toast.makeText(this@PlusFriendActivity, message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onSuccessReject(response: String?) {
-        Toast.makeText(this, "친구 요청을 거절했습니다.", Toast.LENGTH_SHORT).show()
-        requestAdapter.updateData()
+    override fun onSupportNavigateUp(): Boolean {
+        startActivity(Intent(this, MainActivity::class.java))
+        return true
     }
 
-    override fun onErrorReject(error: String) {
-        when {
-            error.contains("400") -> {
-                Toast.makeText(this, "잘못된 요청: $error", Toast.LENGTH_SHORT).show()
-            }
-            error.contains("401") -> {
-                Toast.makeText(this, "인증 실패: $error", Toast.LENGTH_SHORT).show()
-            }
-            // 추가적인 오류 처리 로직을 여기에 추가
-            else -> {
-                Toast.makeText(this, "알 수 없는 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
-
-            }
-        }
+    override fun navigateToActivity(intent: Intent) {
+        startActivity(Intent(this, PlusFriendActivity::class.java))
     }
-
 }

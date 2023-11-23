@@ -75,4 +75,22 @@ interface RetrofitService {
     @GET("/api/friend/friend")
     fun getFriendsList(): Call<List<com.example.moapp.User>>
 
+    @GET("/api/friend/add-friend")
+    fun getRequestFriend(): Call<List<com.example.moapp.User>>
+
+    @POST("/api/friend/add-friend")
+    fun postAddFriend(
+        @Query("name") name: String,
+    ): Call<PostAddFriendResponse>
+
+    @POST("/api/friend/add-friend")
+    fun postAcceptFriend(
+        @Query("id") id: Int,
+    ): Call<PostAcceptFriendResponse>
+
+    @DELETE("/api/friend/add-friend")
+    fun deleteRequestedFriend(
+        @Query("id") id: Int
+    ): Call<DeleteRequestFriendResponse>
+
 }

@@ -31,3 +31,4 @@ data class PatchScheduleResponse(
 data class DeleteScheduleResponse(
     val id: Int
 )
+

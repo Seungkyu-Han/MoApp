@@ -28,11 +28,13 @@ class MainActivity : AppCompatActivity() {
         var settingIntent = Intent(this, SettingActivity::class.java)
         var loginIntent = Intent(this, LoginActivity::class.java)
         val scheduleIntent = Intent(this, ScheduleDetail::class.java)
-        var friendsList = Intent(this, FriendsActivity::class.java)
+        var friendsListIntent = Intent(this, FriendsActivity::class.java)
+        var plusfriendIntent = Intent(this, PlusFriendActivity::class.java)
 
         var button1: Button = findViewById(R.id.goToScheduleDetail)
         var button2: Button = findViewById(R.id.goToSetting)
         var button3: Button = findViewById(R.id.goToFriendsList)
+        var button4: Button = findViewById(R.id.goToPlusFriend)
 
         service.loginCheck("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
             object : Callback<Unit> {
@@ -61,7 +63,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         button3.setOnClickListener{//go to Friends List page
-            startActivity(friendsList)
+            startActivity(friendsListIntent)
+        }
+        button4.setOnClickListener{//go to Friends List page
+            startActivity(plusfriendIntent)
         }
     }
 }

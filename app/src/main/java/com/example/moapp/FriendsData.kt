@@ -17,3 +17,14 @@ data class ChatModel(
     val comments: Map<String, Comment>
 )
 
+data class PostAddFriendResponse(
+    val name: String,
+)
+
+data class PostAcceptFriendResponse(
+    val id: Int,
+)
+
+data class DeleteRequestFriendResponse(
+    val id: Int,
+)
