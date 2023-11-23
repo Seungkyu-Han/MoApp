@@ -93,4 +93,7 @@ interface RetrofitService {
         @Query("id") id: Int
     ): Call<DeleteRequestFriendResponse>
 
+    @GET("/api/share/share")
+    fun getShareList(): Call<List<ShareRes>>
+
 }

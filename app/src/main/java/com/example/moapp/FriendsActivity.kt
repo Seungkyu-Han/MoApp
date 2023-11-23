@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
-import android.provider.Settings.Global.getString
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,11 +18,6 @@ import com.bumptech.glide.Glide
 import com.example.moapp.databinding.ActivityFriendsBinding
 import com.example.moapp.databinding.ItemFriendsBinding
 import com.example.moapp.fragment.ProfileFragment
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
