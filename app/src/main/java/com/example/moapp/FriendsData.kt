@@ -33,3 +33,7 @@ data class PostAcceptFriendResponse(
 data class DeleteRequestFriendResponse(
     val id: Int,
 )
+
+data class DeleteFriendResponse(
+    val id: Int,
+)

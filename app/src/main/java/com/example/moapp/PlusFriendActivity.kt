@@ -58,20 +58,6 @@ class FriendRequestAdapter(
             .load(userModels[position].img)
             .into(binding.requestItemImageview)
 
-        // 아이템 클릭 시 프로필 팝업 표시
-        holder.itemView.setOnClickListener {
-            val fragmentManager = (holder.itemView.context as FragmentActivity).supportFragmentManager
-            val profileFragment = ProfileFragment()
-
-            val args = Bundle()
-            args.putInt(ProfileFragment.ARG_USER_ID, userModels[position].id)
-            args.putString(ProfileFragment.ARG_USER_NAME, userModels[position].name)
-            args.putString(ProfileFragment.ARG_USER_IMG, userModels[position].img)
-            profileFragment.arguments = args
-
-            profileFragment.show(fragmentManager, ProfileFragment::class.java.simpleName)
-        }
-
         // 수락 버튼 클릭
         binding.acceptFriendBtn.setOnClickListener {
             listener.onAcceptFriendRequest(userModels[position])

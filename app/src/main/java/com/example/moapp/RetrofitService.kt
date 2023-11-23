@@ -75,6 +75,11 @@ interface RetrofitService {
     @GET("/api/friend/friend")
     fun getFriendsList(): Call<List<com.example.moapp.User>>
 
+    @DELETE("/api/friend/friend")
+    fun deleteFriend(
+        @Query("id") id: Int
+    ): Call<DeleteFriendResponse>
+
     @GET("/api/friend/add-friend")
     fun getRequestFriend(): Call<List<com.example.moapp.User>>
 
@@ -95,5 +100,6 @@ interface RetrofitService {
 
     @GET("/api/share/share")
     fun getShareList(): Call<List<ShareRes>>
+
 
 }
