@@ -71,4 +71,8 @@ interface RetrofitService {
     fun deleteUserSchedule(
         @Query("id") id: Int
     ): Call<DeleteScheduleResponse>
+
+    @GET("/api/friend/friend")
+    fun getFriendsList(): Call<List<com.example.moapp.User>>
+
 }

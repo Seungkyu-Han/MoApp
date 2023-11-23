@@ -23,6 +23,9 @@
             android:name=".ScheduleDetail"
             android:exported="true" />
         <activity
+            android:name=".FriendsActivity"
+            android:exported="true" />
+        <activity
             android:name=".AddUserSchedule"
             android:exported="false" />
         <activity

@@ -1,5 +1,6 @@
 package com.example.moapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     val retrofit = Retrofit.Builder().baseUrl("https://hangang-bike.site/")
         .addConverterFactory(GsonConverterFactory.create()).build()
     val service = retrofit.create(RetrofitService::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -26,8 +28,11 @@ class MainActivity : AppCompatActivity() {
         var settingIntent = Intent(this, SettingActivity::class.java)
         var loginIntent = Intent(this, LoginActivity::class.java)
         val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var friendsList = Intent(this, FriendsActivity::class.java)
+
         var button1: Button = findViewById(R.id.goToScheduleDetail)
         var button2: Button = findViewById(R.id.goToSetting)
+        var button3: Button = findViewById(R.id.goToFriendsList)
 
         service.loginCheck("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
             object : Callback<Unit> {
@@ -51,9 +56,12 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-
         button1.setOnClickListener{//go to ScheduleDetail page
             startActivity(scheduleIntent)
+        }
+
+        button3.setOnClickListener{//go to Friends List page
+            startActivity(friendsList)
         }
     }
 }
