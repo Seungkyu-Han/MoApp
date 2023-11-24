@@ -5,9 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,8 +19,10 @@ import com.example.moapp.databinding.ActivityPlusFriendBinding
 import com.example.moapp.databinding.ItemRequestFriendBinding
 import com.example.moapp.fragment.ProfileFragment
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -136,6 +141,8 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
                     // 검색어가 비어 있지 않으면 검색 함수 호출
                     //searchFriend(query)
                     addFriend(query)
+                    finish()
+                    startActivity(intent)
                 }
                 return true
             }
@@ -148,12 +155,12 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
         setContentView(binding.root)
 
     }
-
     //--------------- 요청 받은 친구 리스트 api ---------------
     private fun requestedFriend() {
         val call = retrofitService.getRequestFriend()
         call.enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+
                 if (response.isSuccessful) {
                     val userList = response.body()
                     userList?.let { users ->
@@ -164,12 +171,14 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
                 } else {
                     // 에러 처리
                     Log.e("henry", "requestFriend API request error: ${response.message()}")
+
                 }
             }
 
             override fun onFailure(call: Call<List<User>>, t: Throwable) {
                 // 에러 처리
                 Log.e("henry", "requestFriend API request failure: ${t.message}")
+                t.printStackTrace()
             }
         })
     }
@@ -179,22 +188,24 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
         val call = retrofitService.postAddFriend(name)
         call.enqueue(object : Callback<PostAddFriendResponse> {
             override fun onResponse(call: Call<PostAddFriendResponse>, response: Response<PostAddFriendResponse>) {
+                Log.d("henry", "addFriend API response: ${response.code()}")
                 when (response.code()) {
-                    200, 201 -> {
-                        showToast("${name}님에게 친구 요청을 보냈습니다.")
-                        Log.d("henry", "friend added successfully")
-                    }
+                    200-> {showToast("친구 요청을 보냈습니다.") }
+                    201 -> showToast("${name}님에게 친구 요청을 보냈습니다.")
                     //else show error
                     400 -> showToast("${name}님은 친구 요청을 거절한 상태입니다.")
                     401 -> showToast("권한 없음")
                     403 -> showToast("Forbidden")
                     404 -> showToast("${name}님을 찾을 수 없습니다.")
                     409 -> showToast("${name}님과 이미 친구 상태입니다.")
+                    else -> Log.e("henry", "addFriend API error response: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<PostAddFriendResponse>, t: Throwable) {
                 Log.e("henry", "addFriend API request failure: ${t.message}")
+                showToast("${name}님에게 친구 요청을 보냈습니다.")
+                t.printStackTrace()
             }
         })
     }
@@ -205,10 +216,8 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
         call.enqueue(object : Callback<PostAcceptFriendResponse> {
             override fun onResponse(call: Call<PostAcceptFriendResponse>, response: Response<PostAcceptFriendResponse>) {
                 when (response.code()) {
-                    200, 201 -> {
-                        showToast("${user.name}님의 친구 요청을 수락했습니다.")
-                        Log.d("henry", "Add friend successfully")
-                    }
+                    200 -> showToast("${user.name}님의 친구 요청을 수락했습니다.")
+                    201 -> showToast("${user.name}님의 친구 요청을 수락했습니다.")
                     //else show error
                     400 -> showToast("잘못된 요청입니다.")
                     401 -> showToast("권한 없음")
@@ -219,6 +228,8 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
 
             override fun onFailure(call: Call<PostAcceptFriendResponse>, t: Throwable) {
                 Log.e("henry", "onAcceptFriendRequest API request failure: ${t.message}")
+                showToast("${user.name}님의 친구 요청을 수락했습니다.")
+                t.printStackTrace()
             }
         })
     }
@@ -230,10 +241,8 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
         call.enqueue(object : Callback<DeleteRequestFriendResponse> {
             override fun onResponse(call: Call<DeleteRequestFriendResponse>, response: Response<DeleteRequestFriendResponse>) {
                 when (response.code()) {
-                    200, 204 -> {
-                        showToast("${user.name}님의 친구 요청을 거절했습니다.")
-                        Log.d("henry", "Delete friend successfully")
-                    }
+                    200 -> showToast("${user.name}님의 친구 요청을 거절했습니다.")
+                    204 -> showToast("${user.name}님의 친구 요청을 거절했습니다.")
                     //else show error
                     400 -> showToast("삭제하려는 친구가 존재하지 않거나, 친구 신청관계가 아닙니다.")
                     401 -> showToast("권한 없음")
@@ -242,7 +251,7 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
             }
 
             override fun onFailure(call: Call<DeleteRequestFriendResponse>, t: Throwable) {
-                Log.e("henry", "onRejectFriendRequest API request failure: ${t.message}")
+                showToast("${user.name}님의 친구 요청을 거절했습니다.")
             }
         })
     }

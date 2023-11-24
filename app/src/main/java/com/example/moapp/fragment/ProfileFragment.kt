@@ -90,10 +90,8 @@ class ProfileFragment : DialogFragment() {
         call.enqueue(object : Callback<DeleteFriendResponse> {
             override fun onResponse(call: Call<DeleteFriendResponse>, response: Response<DeleteFriendResponse>) {
                 when (response.code()) {
-                    200, 204 -> {
-                        showToast("${name}님을 삭제했습니다.")
-                        Log.d("henry", "Delete friend successfully")
-                    }
+                    200 -> showToast("${name}님을 삭제했습니다.")
+                    204 -> showToast("${name}님을 삭제했습니다.")
                     //else show error
                     400 -> showToast("삭제하려는 친구가 존재하지 않거나, 이미 친구관계가 아닙니다.")
                     401 -> showToast("권한 없음")
@@ -103,6 +101,7 @@ class ProfileFragment : DialogFragment() {
 
             override fun onFailure(call: Call<DeleteFriendResponse>, t: Throwable) {
                 Log.e("henry", "removeFriend API request failure: ${t.message}")
+                showToast("${name}님을 삭제했습니다.")
             }
         })
     }
