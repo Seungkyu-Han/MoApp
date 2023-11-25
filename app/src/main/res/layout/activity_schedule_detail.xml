@@ -3,19 +3,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#C62E2E">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="개인 일정"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+            <LinearLayout
+                android:id="@+id/header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="내 시간표"
+                    android:textSize="25sp"
+                    android:textColor="#C62E2E"
+                    android:textStyle="bold"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="25dp"/>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/addButton"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:text="+"
+                    android:textSize="23sp"
+                    android:textColor="#C62E2E"
+                    android:background="@drawable/bg_add_button"
+                    android:layout_marginLeft="220dp"/>
+            </LinearLayout>
             <TableLayout
                 android:id="@+id/scheduleTable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
+                android:layout_below="@+id/header"
                 android:layout_gravity="center"/>
 
             <GridLayout
@@ -26,20 +64,9 @@
                 android:columnCount="3"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="20dp">
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="15dp">
             </GridLayout>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/addButton"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/annotationsLayout"
-                android:text="+"
-                android:textSize="35sp"
-                android:textColor="@color/white"
-                android:background="@drawable/bg_button"
-                android:layout_marginEnd="50dp"/>
 
         </RelativeLayout>
     </ScrollView>
