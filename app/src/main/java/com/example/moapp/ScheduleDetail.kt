@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,7 +30,6 @@ class ScheduleDetail : AppCompatActivity() {
     private lateinit var scheduleTable: TableLayout
     private lateinit var addButton: Button
     private lateinit var retrofitService: RetrofitService
-
 
     // 2D array to hold cell IDs corresponding to scheduleEvent.id
     private val cellIdTable = Array(25) { IntArray(8) { -1 } }  // init value = -1
@@ -52,8 +52,12 @@ class ScheduleDetail : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule_detail)
 
-        supportActionBar?.title = "My Schedule"
+        val toolbar: Toolbar = findViewById(R.id.toolbar1)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
+        val upArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.setHomeAsUpIndicator(upArrow)
 
         scheduleTable = findViewById(R.id.scheduleTable)
         addButton = findViewById(R.id.addButton)
@@ -96,8 +100,8 @@ class ScheduleDetail : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val scheduleIntent = Intent(this, MainActivity::class.java)
-        startActivity(scheduleIntent)
+        val mainIntent = Intent(this, MainActivity::class.java)
+        startActivity(mainIntent)
         return true
     }
 
@@ -131,19 +135,50 @@ class ScheduleDetail : AppCompatActivity() {
 
     //createScheduleTable(): create Table 25 rows x 8 cols, no data, empty table
     private fun createScheduleTable() {
-        val headers = arrayOf("시간", "월", "화", "수", "목", "금", "토", "일")
-        val timeList = Array(24) { "%02d:00".format(it) }
+        val headers = arrayOf("", "월", "화", "수", "목", "금", "토", "일")
+        val timeList = Array(24) { "    %2d ".format(it) }
 
         for (i in 0 until 25) {
             val row = TableRow(this)
-
             for (j in 0 until 8) {
                 val cellText = when {
                     i == 0 -> headers[j]
                     j == 0 -> timeList[i - 1]
                     else -> " "
                 }
-                val cell = getTableCell(cellText)
+                val cell = TextView(this)
+                cell.text = cellText
+                when {
+                    i == 0 && j == 0 ->{
+                        val params = TableRow.LayoutParams(30, 50)
+                        cell.layoutParams = params
+                    }
+                    i == 0 -> {
+                        val params = TableRow.LayoutParams(130, 50)
+                        cell.layoutParams = params
+                        cell.gravity = Gravity.CENTER
+                        cell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11F)
+                        cell.setTextColor(Color.BLACK)
+                        cell.background = resources.getDrawable(R.drawable.bg_cell_table)
+                    }
+                    j == 0 ->{
+                        cell.layoutParams = TableRow.LayoutParams(
+                            TableRow.LayoutParams.WRAP_CONTENT,
+                            TableRow.LayoutParams.MATCH_PARENT
+                        )
+                        cell.gravity = Gravity.TOP or Gravity.END
+                        cell.setPadding(0, 0, 0, 0)
+                        cell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10F)
+                        cell.setTextColor(Color.BLACK)
+                        cell.background = resources.getDrawable(R.drawable.bg_timecell_table)
+                    }
+                    else -> {
+                        val params = TableRow.LayoutParams(130, 60)
+                        cell.layoutParams = params
+                        cell.gravity = Gravity.CENTER
+                        cell.background = resources.getDrawable(R.drawable.bg_cell_table)
+                    }
+                }
                 cell.setOnClickListener{
                     //if any cell is clicked, save clickedCellId in cellIdTable[][]
                     val rowIndex = scheduleTable.indexOfChild(row)
@@ -191,20 +226,6 @@ class ScheduleDetail : AppCompatActivity() {
         }
     }
 
-    //getTableCell(): design LayoutParams and background for each table cell
-    private fun getTableCell(text: String): TextView {
-        val cell = TextView(this)
-        cell.text = text
-
-        cell.background = resources.getDrawable(R.drawable.bg_cell_table)
-
-        val params = TableRow.LayoutParams(120,50)
-        cell.layoutParams = params
-        cell.gravity = Gravity.CENTER
-        cell.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11F)
-        cell.setTextColor(Color.BLACK)
-        return cell
-    }
 
     //updateTableCell(): insert data cell (with color) into empty table
     private fun updateTableCell(scheduleEvent: ScheduleEvent, color: Int) {
@@ -294,7 +315,6 @@ class ScheduleDetail : AppCompatActivity() {
         val textView = TextView(this)
         textView.text = text
         textView.setPadding(10, 5, 10, 5)
-        textView.setBackgroundColor(Color.WHITE)
 
         val textLayoutParams = GridLayout.LayoutParams().apply {
             width = GridLayout.LayoutParams.WRAP_CONTENT
