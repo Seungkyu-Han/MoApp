@@ -1,6 +1,7 @@
 package com.example.moapp
 
 import android.app.Dialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.example.moapp.databinding.ActivitySettingBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,9 +26,16 @@ class SettingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        val toolbar: Toolbar = findViewById(R.id.toolbar_settings)
+        setSupportActionBar(toolbar)
         supportActionBar?.title = ""
+        val backArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.setHomeAsUpIndicator(backArrow)
+
+
 
         Log.d("park", "세팅 페이지 실행됨")
         service.getFriendState("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
@@ -77,6 +86,10 @@ class SettingActivity : AppCompatActivity() {
 
         binding.changeNameBtn.setOnClickListener {
             showChangeNameDialog()
+        }
+
+        binding.changeProfileImage.setOnClickListener{
+            // hien: add something here
         }
 
         binding.addFriendToggler.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -158,6 +171,7 @@ class SettingActivity : AppCompatActivity() {
         }
     }
 
+
     private fun showChangeNameDialog(): Unit {
         changeNameDialog.show()
 
@@ -196,7 +210,8 @@ class SettingActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()   //go back
+        val mainIntent = Intent(this, MainActivity::class.java)
+        startActivity(mainIntent)
         return true
     }
 }
