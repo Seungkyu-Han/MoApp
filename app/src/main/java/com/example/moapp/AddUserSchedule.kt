@@ -6,10 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Spinner
 import android.widget.Toast
-import com.example.moapp.PostScheduleResponse
-import com.example.moapp.PrefApp
-import com.example.moapp.RetrofitService
-import com.example.moapp.ScheduleDetail
+import androidx.appcompat.widget.Toolbar
 import com.example.moapp.databinding.ActivityAddUserScheduleBinding
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -28,8 +25,12 @@ class AddUserSchedule : AppCompatActivity() {
         val binding = ActivityAddUserScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.title = "Add Schedule"
+        val toolbar: Toolbar = findViewById(R.id.toolbar2)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
+        val upArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.setHomeAsUpIndicator(upArrow)
 
         // initiate retrofit ------------------------------------------------------------------
         val okHttpClient = OkHttpClient.Builder()
@@ -73,7 +74,6 @@ class AddUserSchedule : AppCompatActivity() {
             postSchedule(day, startTime, endTime, scheduleName)
         }
     }
-
     override fun onSupportNavigateUp(): Boolean {
         val scheduleIntent = Intent(this, ScheduleDetail::class.java)
         startActivity(scheduleIntent)
