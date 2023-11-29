@@ -1,12 +1,13 @@
 package com.example.moapp
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -76,6 +77,9 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         super.onCreate(savedInstanceState)
 
         supportActionBar?.title = "Chats"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 //        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         val binding = ActivityChatListBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경

@@ -1,23 +1,20 @@
 package com.example.moapp
 
-import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.moapp.databinding.ActivityFriendsBinding
 import com.example.moapp.databinding.ActivityMainBinding
-import com.kakao.sdk.common.util.Utility
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -37,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
         supportActionBar?.title = "Friends"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         var loginIntent = Intent(this, LoginActivity::class.java)
         var plusfriendIntent = Intent(this, PlusFriendActivity::class.java)

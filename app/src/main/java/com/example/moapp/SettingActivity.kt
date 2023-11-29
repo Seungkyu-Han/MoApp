@@ -2,6 +2,8 @@ package com.example.moapp
 
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -32,6 +34,9 @@ class SettingActivity : AppCompatActivity() {
         var settingIntent = Intent(this, SettingActivity::class.java)
 
         supportActionBar?.title = "Settings"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         Log.d("park", "세팅 페이지 실행됨")
         service.getFriendState("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(

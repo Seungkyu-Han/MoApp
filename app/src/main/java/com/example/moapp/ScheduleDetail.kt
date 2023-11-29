@@ -18,7 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -57,6 +56,9 @@ class ScheduleDetail : AppCompatActivity() {
         setContentView(R.layout.activity_schedule_detail)
 
         supportActionBar?.title = "Schedule"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
         //supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         var mainIntent = Intent(this, MainActivity::class.java)
