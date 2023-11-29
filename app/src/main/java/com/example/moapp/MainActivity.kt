@@ -6,6 +6,8 @@ import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.moapp.databinding.ActivityMainBinding
@@ -39,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         var loginIntent = Intent(this, LoginActivity::class.java)
-        var plusfriendIntent = Intent(this, PlusFriendActivity::class.java)
 
         var mainIntent = Intent(this, MainActivity::class.java)
         val scheduleIntent = Intent(this, ScheduleDetail::class.java)
@@ -114,6 +115,25 @@ class MainActivity : AppCompatActivity() {
             startActivity(settingIntent)
         }
     }
+
+    // action bar - plus friends btn
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.plus_friend_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_add_friend -> {
+                // 버튼 클릭 시 다른 액티비티로 이동
+                var plusfriendIntent = Intent(this, PlusFriendActivity::class.java)
+                startActivity(plusfriendIntent)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun getUserInfo() {
         val call = retrofitService.getUserInfo()
         call.enqueue(object : Callback<User> {

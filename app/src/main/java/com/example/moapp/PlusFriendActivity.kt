@@ -1,6 +1,8 @@
 package com.example.moapp
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -94,8 +96,11 @@ class PlusFriendActivity : AppCompatActivity(), FriendRequestActionListener, Nav
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar?.title = "Requested Friend List"
+        supportActionBar?.title = "Add Friends"
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         val binding = ActivityPlusFriendBinding.inflate(layoutInflater)
 
