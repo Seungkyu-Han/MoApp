@@ -9,14 +9,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.example.moapp.DeleteFriendResponse
-import com.example.moapp.DeleteRequestFriendResponse
 import com.example.moapp.FriendsActivity
-import com.example.moapp.PlusFriendActivity
 import com.example.moapp.PrefApp
 import com.example.moapp.RetrofitService
-import com.example.moapp.ScheduleDetail
-import com.example.moapp.User
 import com.example.moapp.databinding.FragmentProfileBinding
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -87,8 +82,8 @@ class ProfileFragment : DialogFragment() {
     }
     private fun removeFriend(id: Int, name:String) {
         val call = retrofitService.deleteFriend(id)
-        call.enqueue(object : Callback<DeleteFriendResponse> {
-            override fun onResponse(call: Call<DeleteFriendResponse>, response: Response<DeleteFriendResponse>) {
+        call.enqueue(object : Callback<Unit> {
+            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                 when (response.code()) {
                     200 -> showToast("${name}님을 삭제했습니다.")
                     204 -> showToast("${name}님을 삭제했습니다.")
@@ -99,9 +94,8 @@ class ProfileFragment : DialogFragment() {
                 }
             }
 
-            override fun onFailure(call: Call<DeleteFriendResponse>, t: Throwable) {
+            override fun onFailure(call: Call<Unit>, t: Throwable) {
                 Log.e("henry", "removeFriend API request failure: ${t.message}")
-                showToast("${name}님을 삭제했습니다.")
             }
         })
     }

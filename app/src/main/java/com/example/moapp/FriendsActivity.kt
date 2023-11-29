@@ -25,7 +25,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 class FriendsViewHolder(val binding: ItemFriendsBinding) :
     RecyclerView.ViewHolder(binding.root)
 class FriendsAdapter(var userModels: List<User>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -169,12 +168,4 @@ class FriendsActivity : AppCompatActivity() { // FragmentActivity에서 AppCompa
         startActivity(Intent(this, MainActivity::class.java))
         return true
     }
-
 }
-//    fun search(query: String) {
-//        val filteredList = originalUserModel.filter { user ->
-//            user.name.contains(query, true)
-//        }
-//        adapter.updateData(filteredList)
-//    }
-//}

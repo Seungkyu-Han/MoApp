@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.moapp.databinding.ActivityChatListBinding
 import com.example.moapp.databinding.ItemChatBinding
 import okhttp3.OkHttpClient
@@ -44,14 +46,19 @@ class ShareAdapter(var shareRes: List<ShareRes>) : RecyclerView.Adapter<Recycler
 
         // 데이터 바인딩 및 처리 코드 추가
         binding.chatTextviewTitle.text = shareRes[position].name
-        binding.chatItemLastDate.text = shareRes[position].endDate
+        binding.chatItemStartDate.text = shareRes[position].startDate
+        binding.chatItemEndDate.text = shareRes[position].endDate
+        binding.chatItemTextviewUserlist.text = shareRes[position].userInfoResList.joinToString(" ") { it.name }
         binding.chatNum.text = (shareRes[position].userInfoResList).size.toString()
 
-        // 그룹 이미지
-//        Glide.with(binding.chatItemImageview.context)
-//            .load(shareRes[position].img)
-//            .into(binding.chatItemImageview)
+        // 그룹 이미지는 첫번째 유저의 프로필 사진
+        val groupImageUrl = shareRes[position].userInfoResList[0].img
 
+        groupImageUrl?.let {
+            Glide.with(binding.chatItemImageview.context)
+                .load(it)
+                .into(binding.chatItemImageview)
+        }
     }
     fun updateData(newList: List<ShareRes>) {
         shareRes = newList
@@ -79,6 +86,7 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
 
         // 리사이클러 뷰에 LayoutManager 적용
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this) // activity를 사용하므로 this 사용
+
 
         // initiate retrofit -----------------------------------------------------------
         val okHttpClient = OkHttpClient.Builder()
