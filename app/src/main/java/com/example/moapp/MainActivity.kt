@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.moapp.databinding.ActivityFriendsBinding
 import com.example.moapp.databinding.ActivityMainBinding
 import com.kakao.sdk.common.util.Utility
@@ -19,26 +20,25 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     val retrofit = Retrofit.Builder().baseUrl("https://hangang-bike.site/")
         .addConverterFactory(GsonConverterFactory.create()).build()
     val service = retrofit.create(RetrofitService::class.java)
     private val authToken = PrefApp.prefs.getString("accessToken", "default")
     private lateinit var retrofitService: RetrofitService
 
+    private lateinit var userInfo:User
     private lateinit var adapter: FriendsAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
-        val binding = ActivityMainBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
+        binding = ActivityMainBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
         supportActionBar?.title = "Friends"
 
-        var settingIntent = Intent(this, SettingActivity::class.java)
         var loginIntent = Intent(this, LoginActivity::class.java)
-        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
-        var friendsListIntent = Intent(this, FriendsActivity::class.java)
-        var plusfriendIntent = Intent(this, PlusFriendActivity::class.java)
-        var chatListIntent = Intent(this, GroupListActivity::class.java)
 
         service.loginCheck("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
             object : Callback<Unit> {
@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         retrofitService = retrofit.create(RetrofitService::class.java)
         //------------------------------------------------------------------------------
         getFriends()
+        getUserInfo()
         setContentView(binding.root)
 
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
@@ -112,6 +113,40 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+    private fun getUserInfo() {
+        val call = retrofitService.getUserInfo()
+        call.enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+
+                if (response.isSuccessful) {
+                    val info = response.body()
+                    info?.let { user ->
+                        // API 응답을 처리하는 코드
+                        userInfo =user
+                        updateUserInfoViews()
+                    }
+                } else {
+                    // 에러 처리
+                    Log.e("henry", "getUserInfo API request error: ${response.message()}")
+
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                // 에러 처리
+                Log.e("henry", "requestFriend API request failure: ${t.message}")
+                t.printStackTrace()
+            }
+        })
+    }
+    private fun updateUserInfoViews() {
+        // 사용자 정보를 뷰에 업데이트하는 코드
+        binding.userName.text = userInfo.name
+        binding.userId.text = userInfo.id.toString()
+        Glide.with(binding.userImageview.context)
+            .load(userInfo.img)
+            .into(binding.userImageview)
     }
     private fun getFriends() {
         // Retrofit을 사용하여 API 호출

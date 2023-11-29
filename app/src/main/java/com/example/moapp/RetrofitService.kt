@@ -19,6 +19,9 @@ interface RetrofitService {
     @GET("/api/auth/check")
     fun loginCheck(@Header("Authorization") accessToken: String): Call<Unit>
 
+    @GET("/api/user/info")
+    fun getUserInfo(): Call<com.example.moapp.User>
+
     @PATCH("/api/user/info")
     fun changeName(
         @Header("Authorization") accessToken: String,

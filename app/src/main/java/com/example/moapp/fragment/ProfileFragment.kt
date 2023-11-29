@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
-import com.example.moapp.FriendsActivity
+import com.example.moapp.MainActivity
 import com.example.moapp.PrefApp
 import com.example.moapp.RetrofitService
 import com.example.moapp.databinding.FragmentProfileBinding
@@ -50,7 +50,7 @@ class ProfileFragment : DialogFragment() {
             binding.removeFriendBtn.setOnClickListener{
                 Log.d("henry", "${userName} 친구 삭제")
                 removeFriend(userId, userName)
-                val intent = Intent(requireContext(), FriendsActivity::class.java)
+                val intent = Intent(requireContext(), MainActivity::class.java)
                 startActivity(intent)
             }
         }

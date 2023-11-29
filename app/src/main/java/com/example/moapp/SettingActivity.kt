@@ -156,6 +156,23 @@ class SettingActivity : AppCompatActivity() {
                 )
             }
         }
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.navigation_schedule -> {
+                    startActivity(Intent(this, ScheduleDetail::class.java))
+                    true
+                }
+                R.id.navigation_chat -> {
+                    startActivity(Intent(this, GroupListActivity::class.java))
+                    true
+                }
+                R.id.navigation_settings -> {
+                    startActivity(Intent(this, SettingActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun showChangeNameDialog(): Unit {
