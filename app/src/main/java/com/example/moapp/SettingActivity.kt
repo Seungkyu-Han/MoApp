@@ -1,6 +1,7 @@
 package com.example.moapp
 
 import android.app.Dialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -25,8 +26,7 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingBinding.inflate(layoutInflater)
 
-        supportActionBar?.title = ""
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.title = "Settings"
 
         Log.d("park", "세팅 페이지 실행됨")
         service.getFriendState("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(

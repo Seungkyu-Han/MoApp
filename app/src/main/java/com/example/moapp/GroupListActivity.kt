@@ -75,8 +75,8 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar?.title = "My Group Chat List"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.title = "Chats"
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         val binding = ActivityChatListBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
 
@@ -113,6 +113,23 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         //------------------------------------------------------------------------------
         getChatList()
         setContentView(binding.root)
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.navigation_schedule -> {
+                    startActivity(Intent(this, ScheduleDetail::class.java))
+                    true
+                }
+                R.id.navigation_friends -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    true
+                }
+                R.id.navigation_settings -> {
+                    startActivity(Intent(this, SettingActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun getChatList() {

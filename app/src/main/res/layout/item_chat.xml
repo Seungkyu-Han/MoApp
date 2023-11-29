@@ -44,6 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="user1 user2"
+            android:textColor="#565555"
             android:textSize="13sp"
             android:layout_marginTop="6dp"
             android:layout_marginLeft="10dp"/>
@@ -53,25 +54,29 @@
         android:layout_width="113dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:gravity="right"
         android:padding="10dp">
 
         <TextView
             android:id="@+id/chat_item_startDate"
             android:layout_width="73dp"
             android:layout_height="wrap_content"
+            android:textColor="#565555"
             android:gravity="top"
             android:text="start date"
             android:textSize="12sp" />
         <TextView
             android:layout_width="73dp"
             android:layout_height="wrap_content"
-            android:text="~"
+            android:textColor="#565555"
+            android:text="         ~"
             android:textSize="12sp" />
 
         <TextView
             android:id="@+id/chat_item_endDate"
             android:layout_width="73dp"
             android:layout_height="wrap_content"
+            android:textColor="#565555"
             android:gravity="top"
             android:text="end date"
             android:textSize="12sp" />

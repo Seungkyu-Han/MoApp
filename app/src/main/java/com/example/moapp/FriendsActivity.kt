@@ -100,7 +100,7 @@ class FriendsActivity : AppCompatActivity() { // FragmentActivity에서 AppCompa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar?.title = "My Friends List"
+        supportActionBar?.title = "Friends"
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         val binding = ActivityFriendsBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경

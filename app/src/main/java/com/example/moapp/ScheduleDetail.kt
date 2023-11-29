@@ -17,6 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,6 +31,7 @@ class ScheduleDetail : AppCompatActivity() {
     private lateinit var scheduleTable: TableLayout
     private lateinit var addButton: Button
     private lateinit var retrofitService: RetrofitService
+    private lateinit var bottomNavigationView: BottomNavigationView
 
 
     // 2D array to hold cell IDs corresponding to scheduleEvent.id
@@ -52,8 +55,8 @@ class ScheduleDetail : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule_detail)
 
-        supportActionBar?.title = "My Schedule"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.title = "Schedule"
+        //supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         scheduleTable = findViewById(R.id.scheduleTable)
         addButton = findViewById(R.id.addButton)
@@ -92,6 +95,24 @@ class ScheduleDetail : AppCompatActivity() {
         addButton.setOnClickListener {
             val addIntent = Intent(this, AddUserSchedule::class.java)
             startActivity(addIntent)
+        }
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.navigation_friends -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    true
+                }
+                R.id.navigation_chat -> {
+                    startActivity(Intent(this, GroupListActivity::class.java))
+                    true
+                }
+                R.id.navigation_settings -> {
+                    startActivity(Intent(this, SettingActivity::class.java))
+                    true
+                }
+                else -> false
+            }
         }
     }
 
