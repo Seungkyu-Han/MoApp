@@ -39,6 +39,12 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = "Friends"
 
         var loginIntent = Intent(this, LoginActivity::class.java)
+        var plusfriendIntent = Intent(this, PlusFriendActivity::class.java)
+
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
 
         service.loginCheck("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
             object : Callback<Unit> {
@@ -55,7 +61,6 @@ class MainActivity : AppCompatActivity() {
                         startActivity(loginIntent)
                     }
                 }
-
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
                     Log.d("park", "자동 로그인 오류.")
                 }
@@ -96,22 +101,17 @@ class MainActivity : AppCompatActivity() {
         getUserInfo()
         setContentView(binding.root)
 
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.navigation_schedule -> {
-                    startActivity(Intent(this, ScheduleDetail::class.java))
-                    true
-                }
-                R.id.navigation_chat -> {
-                    startActivity(Intent(this, GroupListActivity::class.java))
-                    true
-                }
-                R.id.navigation_settings -> {
-                    startActivity(Intent(this, SettingActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        binding.bottomBar.friendsBtn.setOnClickListener {
+            startActivity(mainIntent)
+        }
+        binding.bottomBar.scheduleBtn.setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        binding.bottomBar.groupsBtn.setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        binding.bottomBar.settingsBtn.setOnClickListener {
+            startActivity(settingIntent)
         }
     }
     private fun getUserInfo() {
@@ -132,7 +132,6 @@ class MainActivity : AppCompatActivity() {
 
                 }
             }
-
             override fun onFailure(call: Call<User>, t: Throwable) {
                 // 에러 처리
                 Log.e("henry", "requestFriend API request failure: ${t.message}")

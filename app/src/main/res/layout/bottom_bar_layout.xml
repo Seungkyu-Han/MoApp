@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- bottom_bar_layout.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="#C62E2E"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <!-- 각 버튼에 대한 LinearLayout 정의 -->
+    <!-- Friends 버튼 -->
+    <LinearLayout
+        android:id="@+id/friends_btn"
+        style="@style/BottomBarButton">
+        <ImageView
+            style="@style/BottomBarButtonImage"
+            android:src="@drawable/profile" />
+        <TextView
+            style="@style/BottomBarButtonText"
+            android:text="Friends" />
+    </LinearLayout>
+
+    <!-- Schedule 버튼 -->
+    <LinearLayout
+        android:id="@+id/schedule_btn"
+        style="@style/BottomBarButton">
+        <ImageView
+            style="@style/BottomBarButtonImage"
+            android:src="@drawable/calendar_white" />
+        <TextView
+            style="@style/BottomBarButtonText"
+            android:text="Schedule" />
+    </LinearLayout>
+
+    <!-- Groups 버튼 -->
+    <LinearLayout
+        android:id="@+id/groups_btn"
+        style="@style/BottomBarButton">
+        <ImageView
+            style="@style/BottomBarButtonImage"
+            android:src="@drawable/profile" />
+        <TextView
+            style="@style/BottomBarButtonText"
+            android:text="Groups" />
+    </LinearLayout>
+
+    <!-- Settings 버튼 -->
+    <LinearLayout
+        android:id="@+id/settings_btn"
+        style="@style/BottomBarButton">
+        <ImageView
+            style="@style/BottomBarButtonImage"
+            android:src="@drawable/profile" />
+        <TextView
+            style="@style/BottomBarButtonText"
+            android:text="Settings" />
+    </LinearLayout>
+
+</LinearLayout>

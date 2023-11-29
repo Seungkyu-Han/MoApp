@@ -26,6 +26,11 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingBinding.inflate(layoutInflater)
 
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
+
         supportActionBar?.title = "Settings"
 
         Log.d("park", "세팅 페이지 실행됨")
@@ -156,22 +161,17 @@ class SettingActivity : AppCompatActivity() {
                 )
             }
         }
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.navigation_schedule -> {
-                    startActivity(Intent(this, ScheduleDetail::class.java))
-                    true
-                }
-                R.id.navigation_chat -> {
-                    startActivity(Intent(this, GroupListActivity::class.java))
-                    true
-                }
-                R.id.navigation_settings -> {
-                    startActivity(Intent(this, SettingActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        binding.bottomBar.friendsBtn.setOnClickListener {
+            startActivity(mainIntent)
+        }
+        binding.bottomBar.scheduleBtn.setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        binding.bottomBar.groupsBtn.setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        binding.bottomBar.settingsBtn.setOnClickListener {
+            startActivity(settingIntent)
         }
     }
 

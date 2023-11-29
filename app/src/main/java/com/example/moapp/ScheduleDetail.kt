@@ -11,6 +11,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
+import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -58,6 +59,11 @@ class ScheduleDetail : AppCompatActivity() {
         supportActionBar?.title = "Schedule"
         //supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
+
         scheduleTable = findViewById(R.id.scheduleTable)
         addButton = findViewById(R.id.addButton)
 
@@ -96,24 +102,20 @@ class ScheduleDetail : AppCompatActivity() {
             val addIntent = Intent(this, AddUserSchedule::class.java)
             startActivity(addIntent)
         }
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.navigation_friends -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    true
-                }
-                R.id.navigation_chat -> {
-                    startActivity(Intent(this, GroupListActivity::class.java))
-                    true
-                }
-                R.id.navigation_settings -> {
-                    startActivity(Intent(this, SettingActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+
+        findViewById<LinearLayout>(R.id.friends_btn).setOnClickListener {
+            startActivity(mainIntent)
         }
+        findViewById<LinearLayout>(R.id.schedule_btn).setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        findViewById<LinearLayout>(R.id.groups_btn).setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        findViewById<LinearLayout>(R.id.settings_btn).setOnClickListener {
+            startActivity(settingIntent)
+        }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {

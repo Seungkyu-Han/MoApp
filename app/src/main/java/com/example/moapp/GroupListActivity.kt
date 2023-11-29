@@ -80,6 +80,11 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
 
         val binding = ActivityChatListBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
 
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
+
         // 어뎁터 초기화
         adapter = ShareAdapter(emptyList())
         binding.chatRecyclerView.adapter = adapter
@@ -113,22 +118,17 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         //------------------------------------------------------------------------------
         getChatList()
         setContentView(binding.root)
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.navigation_schedule -> {
-                    startActivity(Intent(this, ScheduleDetail::class.java))
-                    true
-                }
-                R.id.navigation_friends -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    true
-                }
-                R.id.navigation_settings -> {
-                    startActivity(Intent(this, SettingActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        binding.bottomBar.friendsBtn.setOnClickListener {
+            startActivity(mainIntent)
+        }
+        binding.bottomBar.scheduleBtn.setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        binding.bottomBar.groupsBtn.setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        binding.bottomBar.settingsBtn.setOnClickListener {
+            startActivity(settingIntent)
         }
     }
 
