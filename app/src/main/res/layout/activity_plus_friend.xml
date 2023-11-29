@@ -22,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
+        android:background="#C8DDB0"
         android:autofillHints="친구 이름으로 검색"/>
 
     <androidx.recyclerview.widget.RecyclerView
