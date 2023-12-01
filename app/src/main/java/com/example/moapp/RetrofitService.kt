@@ -19,6 +19,9 @@ interface RetrofitService {
     @GET("/api/auth/check")
     fun loginCheck(@Header("Authorization") accessToken: String): Call<Unit>
 
+    @GET("/api/user/info")
+    fun getUserInfo(): Call<com.example.moapp.User>
+
     @PATCH("/api/user/info")
     fun changeName(
         @Header("Authorization") accessToken: String,
@@ -78,7 +81,7 @@ interface RetrofitService {
     @DELETE("/api/friend/friend")
     fun deleteFriend(
         @Query("id") id: Int
-    ): Call<DeleteFriendResponse>
+    ): Call<Unit>
 
     @GET("/api/friend/add-friend")
     fun getRequestFriend(): Call<List<com.example.moapp.User>>
@@ -86,17 +89,17 @@ interface RetrofitService {
     @POST("/api/friend/add-friend")
     fun postAddFriend(
         @Query("name") name: String,
-    ): Call<PostAddFriendResponse>
+    ): Call<Unit>
 
     @POST("/api/friend/add-friend")
     fun postAcceptFriend(
         @Query("id") id: Int,
-    ): Call<PostAcceptFriendResponse>
+    ): Call<Unit>
 
     @DELETE("/api/friend/add-friend")
     fun deleteRequestedFriend(
         @Query("id") id: Int
-    ): Call<DeleteRequestFriendResponse>
+    ): Call<Unit>
 
     @GET("/api/share/share")
     fun getShareList(): Call<List<ShareRes>>

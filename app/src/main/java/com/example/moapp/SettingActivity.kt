@@ -1,6 +1,9 @@
 package com.example.moapp
 
 import android.app.Dialog
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -25,8 +28,15 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingBinding.inflate(layoutInflater)
 
-        supportActionBar?.title = ""
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
+
+        supportActionBar?.title = "Settings"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         Log.d("park", "세팅 페이지 실행됨")
         service.getFriendState("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
@@ -155,6 +165,18 @@ class SettingActivity : AppCompatActivity() {
                     }
                 )
             }
+        }
+        binding.bottomBar.friendsBtn.setOnClickListener {
+            startActivity(mainIntent)
+        }
+        binding.bottomBar.scheduleBtn.setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        binding.bottomBar.groupsBtn.setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        binding.bottomBar.settingsBtn.setOnClickListener {
+            startActivity(settingIntent)
         }
     }
 

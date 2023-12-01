@@ -1,6 +1,8 @@
 package com.example.moapp
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.moapp.databinding.ActivityChatListBinding
 import com.example.moapp.databinding.ItemChatBinding
 import okhttp3.OkHttpClient
@@ -44,14 +47,19 @@ class ShareAdapter(var shareRes: List<ShareRes>) : RecyclerView.Adapter<Recycler
 
         // 데이터 바인딩 및 처리 코드 추가
         binding.chatTextviewTitle.text = shareRes[position].name
-        binding.chatItemLastDate.text = shareRes[position].endDate
+        binding.chatItemStartDate.text = shareRes[position].startDate
+        binding.chatItemEndDate.text = shareRes[position].endDate
+        binding.chatItemTextviewUserlist.text = shareRes[position].userInfoResList.joinToString(" ") { it.name }
         binding.chatNum.text = (shareRes[position].userInfoResList).size.toString()
 
-        // 그룹 이미지
-//        Glide.with(binding.chatItemImageview.context)
-//            .load(shareRes[position].img)
-//            .into(binding.chatItemImageview)
+        // 그룹 이미지는 첫번째 유저의 프로필 사진
+        val groupImageUrl = shareRes[position].userInfoResList[0].img
 
+        groupImageUrl?.let {
+            Glide.with(binding.chatItemImageview.context)
+                .load(it)
+                .into(binding.chatItemImageview)
+        }
     }
     fun updateData(newList: List<ShareRes>) {
         shareRes = newList
@@ -68,10 +76,18 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar?.title = "My Group Chat List"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.title = "Chats"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         val binding = ActivityChatListBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
+
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
 
         // 어뎁터 초기화
         adapter = ShareAdapter(emptyList())
@@ -79,6 +95,7 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
 
         // 리사이클러 뷰에 LayoutManager 적용
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this) // activity를 사용하므로 this 사용
+
 
         // initiate retrofit -----------------------------------------------------------
         val okHttpClient = OkHttpClient.Builder()
@@ -105,6 +122,18 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         //------------------------------------------------------------------------------
         getChatList()
         setContentView(binding.root)
+        binding.bottomBar.friendsBtn.setOnClickListener {
+            startActivity(mainIntent)
+        }
+        binding.bottomBar.scheduleBtn.setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        binding.bottomBar.groupsBtn.setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        binding.bottomBar.settingsBtn.setOnClickListener {
+            startActivity(settingIntent)
+        }
     }
 
     private fun getChatList() {

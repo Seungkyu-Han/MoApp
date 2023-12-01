@@ -11,12 +11,14 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.GridLayout
+import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,6 +31,7 @@ class ScheduleDetail : AppCompatActivity() {
     private lateinit var scheduleTable: TableLayout
     private lateinit var addButton: Button
     private lateinit var retrofitService: RetrofitService
+    private lateinit var bottomNavigationView: BottomNavigationView
 
 
     // 2D array to hold cell IDs corresponding to scheduleEvent.id
@@ -52,8 +55,16 @@ class ScheduleDetail : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule_detail)
 
-        supportActionBar?.title = "My Schedule"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.title = "Schedule"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
+        //supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+
+        var mainIntent = Intent(this, MainActivity::class.java)
+        val scheduleIntent = Intent(this, ScheduleDetail::class.java)
+        var chatListIntent = Intent(this, GroupListActivity::class.java)
+        var settingIntent = Intent(this, SettingActivity::class.java)
 
         scheduleTable = findViewById(R.id.scheduleTable)
         addButton = findViewById(R.id.addButton)
@@ -93,6 +104,20 @@ class ScheduleDetail : AppCompatActivity() {
             val addIntent = Intent(this, AddUserSchedule::class.java)
             startActivity(addIntent)
         }
+
+        findViewById<LinearLayout>(R.id.friends_btn).setOnClickListener {
+            startActivity(mainIntent)
+        }
+        findViewById<LinearLayout>(R.id.schedule_btn).setOnClickListener {
+            startActivity(scheduleIntent)
+        }
+        findViewById<LinearLayout>(R.id.groups_btn).setOnClickListener {
+            startActivity(chatListIntent)
+        }
+        findViewById<LinearLayout>(R.id.settings_btn).setOnClickListener {
+            startActivity(settingIntent)
+        }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
