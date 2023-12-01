@@ -7,22 +7,12 @@
     android:background="#FFFFFF"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="친구 요청"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:background="#FFC107"
-        android:textAlignment="center"/>
-
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:background="#C8DDB0"
+        android:background="#FFFFFF"
         android:autofillHints="친구 이름으로 검색"/>
 
     <androidx.recyclerview.widget.RecyclerView

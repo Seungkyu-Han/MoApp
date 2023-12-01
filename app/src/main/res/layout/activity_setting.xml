@@ -45,6 +45,20 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/line_divider" />
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10sp"
+        android:src="@drawable/person_icon"/>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp"
@@ -130,7 +144,15 @@
             android:layout_marginLeft="30dp"
             android:checked="false"/>
     </LinearLayout>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/line_divider" />
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10sp"
+        android:src="@drawable/calendar_icon"
+        android:padding="5sp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -191,4 +213,8 @@
             android:layout_gravity="center"
             android:checked="false"/>
     </LinearLayout>
+    </LinearLayout>
+    <!-- BottomBarLayout 사용 -->
+    <include layout="@layout/bottom_bar_layout"
+        android:id="@+id/bottom_bar"/>
 </LinearLayout>

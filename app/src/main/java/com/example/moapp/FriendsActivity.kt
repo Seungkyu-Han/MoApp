@@ -25,7 +25,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 class FriendsViewHolder(val binding: ItemFriendsBinding) :
     RecyclerView.ViewHolder(binding.root)
 class FriendsAdapter(var userModels: List<User>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -91,90 +90,82 @@ class FriendsDecoration(val context: Context): RecyclerView.ItemDecoration() {
         ViewCompat.setElevation(view, 20.0f)
     }
 }
-
-class FriendsActivity : AppCompatActivity() { // FragmentActivity에서 AppCompatActivity로 변경
-    private lateinit var adapter: FriendsAdapter
-    private lateinit var originalUserModel: List<User>
-    private val authToken = PrefApp.prefs.getString("accessToken", "default")
-    private lateinit var retrofitService: RetrofitService
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        supportActionBar?.title = "My Friends List"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
-
-        val binding = ActivityFriendsBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
-
-        // 어뎁터 초기화
-        adapter = FriendsAdapter(emptyList())
-        binding.recyclerView.adapter = adapter
-
-        // 리사이클러 뷰에 LayoutManager 적용
-        binding.recyclerView.layoutManager = LinearLayoutManager(this) // activity를 사용하므로 this 사용
-
-        // initiate retrofit -----------------------------------------------------------
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                val original = chain.request()
-
-                // Add headers
-                val requestBuilder = original.newBuilder()
-                    .header("accept", "*/*")
-                    .header("Authorization", "Bearer $authToken")
-
-                val modifiedRequest = requestBuilder.build()
-                chain.proceed(modifiedRequest)
-            }
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://hangang-bike.site/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        retrofitService = retrofit.create(RetrofitService::class.java)
-        //------------------------------------------------------------------------------
-        getFriends()
-        setContentView(binding.root)
-    }
-
-    private fun getFriends() {
-        // Retrofit을 사용하여 API 호출
-        val call = retrofitService.getFriendsList()
-        call.enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                if (response.isSuccessful) {
-                    val userList = response.body()
-                    userList?.let { users ->
-                        // API 응답을 처리하는 코드
-                        originalUserModel = users
-                        adapter.updateData(users)
-                    }
-                } else {
-                    // 에러 처리
-                    Log.e("henry", "getFriends API request error: ${response.message()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                // 에러 처리
-                Log.e("henry", "getFriends API request failure: ${t.message}")
-            }
-        })
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        startActivity(Intent(this, MainActivity::class.java))
-        return true
-    }
-
-}
-//    fun search(query: String) {
-//        val filteredList = originalUserModel.filter { user ->
-//            user.name.contains(query, true)
-//        }
-//        adapter.updateData(filteredList)
+//
+//class FriendsActivity : AppCompatActivity() { // FragmentActivity에서 AppCompatActivity로 변경
+//    private lateinit var adapter: FriendsAdapter
+//    private lateinit var originalUserModel: List<User>
+//    private val authToken = PrefApp.prefs.getString("accessToken", "default")
+//    private lateinit var retrofitService: RetrofitService
+//
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//
+//        supportActionBar?.title = "Friends"
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+//
+//        val binding = ActivityFriendsBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
+//
+//        // 어뎁터 초기화
+//        adapter = FriendsAdapter(emptyList())
+//        binding.recyclerView.adapter = adapter
+//
+//        // 리사이클러 뷰에 LayoutManager 적용
+//        binding.recyclerView.layoutManager = LinearLayoutManager(this) // activity를 사용하므로 this 사용
+//
+//        // initiate retrofit -----------------------------------------------------------
+//        val okHttpClient = OkHttpClient.Builder()
+//            .addInterceptor { chain ->
+//                val original = chain.request()
+//
+//                // Add headers
+//                val requestBuilder = original.newBuilder()
+//                    .header("accept", "*/*")
+//                    .header("Authorization", "Bearer $authToken")
+//
+//                val modifiedRequest = requestBuilder.build()
+//                chain.proceed(modifiedRequest)
+//            }
+//            .build()
+//
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://hangang-bike.site/")
+//            .client(okHttpClient)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        retrofitService = retrofit.create(RetrofitService::class.java)
+//        //------------------------------------------------------------------------------
+//        getFriends()
+//        setContentView(binding.root)
+//    }
+//
+//    private fun getFriends() {
+//        // Retrofit을 사용하여 API 호출
+//        val call = retrofitService.getFriendsList()
+//        call.enqueue(object : Callback<List<User>> {
+//            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+//                if (response.isSuccessful) {
+//                    val userList = response.body()
+//                    userList?.let { users ->
+//                        // API 응답을 처리하는 코드
+//                        originalUserModel = users
+//                        adapter.updateData(users)
+//                    }
+//                } else {
+//                    // 에러 처리
+//                    Log.e("henry", "getFriends API request error: ${response.message()}")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+//                // 에러 처리
+//                Log.e("henry", "getFriends API request failure: ${t.message}")
+//            }
+//        })
+//    }
+//
+//    override fun onSupportNavigateUp(): Boolean {
+//        startActivity(Intent(this, MainActivity::class.java))
+//        return true
 //    }
 //}
