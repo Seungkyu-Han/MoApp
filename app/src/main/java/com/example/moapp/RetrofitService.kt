@@ -1,15 +1,15 @@
 package com.example.moapp
 
-import com.kakao.sdk.user.model.User
+import okhttp3.MultipartBody
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.Path
+import retrofit2.http.Part
 import retrofit2.http.Query
 
 interface RetrofitService {
@@ -101,5 +101,15 @@ interface RetrofitService {
     @GET("/api/share/share")
     fun getShareList(): Call<List<ShareRes>>
 
+    @GET("/api/user/info")
+    fun getUserInfo(
+        @Header("Authorization") accessToken: String
+    ): Call<UserInfo>
 
+    @Multipart
+    @POST("/api/user/image")
+    fun changeImage(
+        @Header("Authorization") accessToken: String,
+        @Part multipartFile: MultipartBody.Part
+    ): Call<Unit>
 }
