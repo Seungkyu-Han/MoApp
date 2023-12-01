@@ -1,6 +1,8 @@
 package com.example.moapp
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -25,12 +27,14 @@ class AddUserSchedule : AppCompatActivity() {
         val binding = ActivityAddUserScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar2)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = ""
         val upArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
         supportActionBar?.setHomeAsUpIndicator(upArrow)
+
+        supportActionBar?.title = "Add Schedule"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         // initiate retrofit ------------------------------------------------------------------
         val okHttpClient = OkHttpClient.Builder()
