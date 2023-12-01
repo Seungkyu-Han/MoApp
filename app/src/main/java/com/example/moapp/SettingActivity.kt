@@ -2,32 +2,59 @@ package com.example.moapp
 
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.example.moapp.databinding.ActivitySettingBinding
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
+import android.provider.OpenableColumns
+import com.bumptech.glide.Glide
+import java.io.FileOutputStream
+
+data class UserInfo(
+    val name: String,
+    val img: String
+)
 
 class SettingActivity : AppCompatActivity() {
     lateinit var changeNameDialog: Dialog
+    lateinit var binding: ActivitySettingBinding
 
     val retrofit = Retrofit.Builder().baseUrl("https://hangang-bike.site/")
         .addConverterFactory(GsonConverterFactory.create()).build()
     val service = retrofit.create(RetrofitService::class.java)
+
+    private val PICK_IMAGE_REQUEST = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivitySettingBinding.inflate(layoutInflater)
+        binding = ActivitySettingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+
+        val toolbar: Toolbar = findViewById(R.id.toolbar_settings)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
+        val backArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.setHomeAsUpIndicator(backArrow)
+        //
         var mainIntent = Intent(this, MainActivity::class.java)
         val scheduleIntent = Intent(this, ScheduleDetail::class.java)
         var chatListIntent = Intent(this, GroupListActivity::class.java)
@@ -37,6 +64,7 @@ class SettingActivity : AppCompatActivity() {
         val colorCode = "#C62E2E" // 색상 코드
         val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
         supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
+
 
         Log.d("park", "세팅 페이지 실행됨")
         service.getFriendState("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
@@ -87,6 +115,21 @@ class SettingActivity : AppCompatActivity() {
 
         binding.changeNameBtn.setOnClickListener {
             showChangeNameDialog()
+        }
+
+
+        binding.selectImage.setOnClickListener{
+            Log.d("hien", "Change profile image button clicked")
+            val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            galleryIntent.type = "image/*"
+
+            // Check if there is an application available to handle the intent
+            if (galleryIntent.resolveActivity(packageManager) != null) {
+                startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
+                Log.d("hien", "Starting gallery intent")
+            } else {
+                Log.d("hien", "No app available to handle this action")
+            }
         }
 
         binding.addFriendToggler.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -166,6 +209,30 @@ class SettingActivity : AppCompatActivity() {
                 )
             }
         }
+
+
+        service.getUserInfo("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
+            object : Callback<UserInfo> {
+                override fun onResponse(call: Call<UserInfo>, response: Response<UserInfo>) {
+                    if (response.isSuccessful) {
+                        val userInfo = response.body()
+                        userInfo?.let {
+                            binding.userNameTextView.text = it.name
+                            Glide.with(this@SettingActivity)
+                                .load(it.img)
+                                .into(binding.userImageView)
+                        }
+                    } else {
+                        Log.d("hien", "Get User Info Error: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<UserInfo>, t: Throwable) {
+                    Log.d("hien", "Get User Info Failure: ${t.message}")
+                }
+            }
+        )
+//충돌지점
         binding.bottomBar.friendsBtn.setOnClickListener {
             startActivity(mainIntent)
         }
@@ -179,6 +246,7 @@ class SettingActivity : AppCompatActivity() {
             startActivity(settingIntent)
         }
     }
+
 
     private fun showChangeNameDialog(): Unit {
         changeNameDialog.show()
@@ -196,6 +264,7 @@ class SettingActivity : AppCompatActivity() {
                             Log.d("park", "이름 변경 성공")
                             Toast.makeText(this@SettingActivity, "이름이 변경되었습니다.", Toast.LENGTH_SHORT).show()
                             changeNameDialog.dismiss()
+                            binding.userNameTextView.text = nameInput.text.toString()
                         } else {
                             Log.d("park", "동일 이름 존재")
                             Toast.makeText(this@SettingActivity, "동일한 이름이 존재합니다.", Toast.LENGTH_SHORT).show()
@@ -218,7 +287,65 @@ class SettingActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()   //go back
+        val mainIntent = Intent(this, MainActivity::class.java)
+        startActivity(mainIntent)
         return true
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
+            val selectedImageUri: Uri = data.data!!
+
+            try {
+                contentResolver.query(selectedImageUri, null, null, null, null)?.use { cursor ->
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    cursor.moveToFirst()
+                    val fileName = cursor.getString(nameIndex)
+                    val inputStream = contentResolver.openInputStream(selectedImageUri)
+
+                    inputStream?.use { input ->
+                        val file = File(cacheDir, fileName)
+                        FileOutputStream(file).use { output ->
+                            input.copyTo(output)
+                        }
+
+                        //change image in setting page
+                        Glide.with(this@SettingActivity)
+                            .load(file)
+                            .into(binding.userImageView)
+
+                        val requestBody = RequestBody.create("image/*".toMediaTypeOrNull(), file)
+                        val imagePart = MultipartBody.Part.createFormData("multipartFile", file.name, requestBody)
+                        service.changeImage("Bearer ${PrefApp.prefs.getString("accessToken", "default")}", imagePart)
+                            .enqueue(object : Callback<Unit> {
+                                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                                    if (response.isSuccessful) {
+                                        Log.d("hien", "Image upload successful")
+                                        Toast.makeText(this@SettingActivity, "프로필 사진이 변경되었습니다", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Log.d("hien", "Image upload failed with code: ${response.code()}")
+                                        Toast.makeText(this@SettingActivity, "Image upload failed", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                                    Log.d("hien", "Image upload failed: ${t.message}")
+                                    Toast.makeText(this@SettingActivity, "Image upload failed", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("hien", "Exception: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
 }
+
+
+

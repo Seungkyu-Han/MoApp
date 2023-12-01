@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.example.moapp.databinding.ActivityUpdateUserScheduleBinding
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -34,8 +35,12 @@ class UpdateUserSchedule : AppCompatActivity() {
         val binding = ActivityUpdateUserScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.title = "Update Schedule"
+        val toolbar: Toolbar = findViewById(R.id.toolbar3)
+        setSupportActionBar(toolbar)
+        supportActionBar?.title = ""
+        val upArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
+        supportActionBar?.setHomeAsUpIndicator(upArrow)
 
         days = resources.getStringArray(R.array.days_array)
         times = resources.getStringArray(R.array.times_array)
@@ -89,7 +94,6 @@ class UpdateUserSchedule : AppCompatActivity() {
             // update schedule info in server, if success return to Schedule Detail page
             patchSchedule(id, day, startTime, endTime, scheduleName)
         }
-
         getSchedule()
     }
 
