@@ -35,21 +35,20 @@ class GroupScheduleActivity : AppCompatActivity() {
     private val token = PrefApp.prefs.getString("accessToken", "default")
     lateinit var groupInfo: Group
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("park", "실행됨")
         super.onCreate(savedInstanceState)
         val binding = ActivityGroupScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val groupId = 8
+
+        val groupId = intent.getIntExtra("groupId", -1)
         var calDate: Int
-        Log.d("park", "그룹 ID")
+
 //        setSupportActionBar(binding.toolbar)
         supportActionBar?.setTitle("그룹 일정")
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        Log.d("park", "title")
+
         service.getGroupInfo(groupId, "Bearer $token").enqueue(object : Callback<Group> {
             override fun onResponse(call: Call<Group>, response: Response<Group>) {
                 if (response.isSuccessful) {
-                    Log.d("park", "통신받음")
                     groupInfo = response.body() as Group
                     val startDate = SimpleDateFormat("yyyy-MM-dd").parse(groupInfo.startDate)
                     val endDate = SimpleDateFormat("yyyy-MM-dd").parse(groupInfo.endDate)
@@ -116,10 +115,8 @@ class GroupScheduleActivity : AppCompatActivity() {
                         call: Call<ArrayList<ArrayList<Boolean>>>,
                         response: Response<ArrayList<ArrayList<Boolean>>>
                     ) {
-                        Log.d("park", "실행")
                         if (response.isSuccessful) {
                             val flag: ArrayList<ArrayList<Boolean>> = response.body() as ArrayList<ArrayList<Boolean>>
-                            Log.d("park", "할당")
                             for (i in 1..24) {
                                 for (j in 1 .. calDate) {
                                     if (!(flag[j - 1][i - 1])) {
