@@ -1,5 +1,6 @@
 package com.example.moapp
 
+import com.example.moapp.model.Group
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.DELETE
@@ -115,4 +116,28 @@ interface RetrofitService {
         @Header("Authorization") accessToken: String,
         @Part multipartFile: MultipartBody.Part
     ): Call<Unit>
+
+    @GET("/api/friend/friend")
+    fun getFriendList(@Header("Authorization") accessToken: String): Call<ArrayList<User>>
+
+    @POST("/api/share/share")
+    fun createShareGroup(
+        @Query("endDate") toDate: String,
+        @Query("name") title: String,
+        @Query("startDate") fromDate: String,
+        @Query("userIdList") friends: ArrayList<User>,
+        @Header("Authorization") accessToken: String
+    ): Call<Unit>
+
+    @GET("/api/share/info")
+    fun getGroupInfo(
+        @Query("id") groupId: Int,
+        @Header("Authorization") accessToken: String
+    ): Call<Group>
+
+    @GET("/api/share-schedule/schedule")
+    fun getGroupSchedule(
+        @Query("id") groupId: Int,
+        @Header("Authorization") accessToken: String
+    ): Call<ArrayList<ArrayList<Boolean>>>
 }
