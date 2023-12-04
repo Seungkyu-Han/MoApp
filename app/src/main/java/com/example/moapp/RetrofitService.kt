@@ -1,8 +1,10 @@
 package com.example.moapp
 
 import com.example.moapp.model.Group
+import com.example.moapp.model.groupPostReq
 import okhttp3.MultipartBody
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -122,10 +124,7 @@ interface RetrofitService {
 
     @POST("/api/share/share")
     fun createShareGroup(
-        @Query("endDate") toDate: String,
-        @Query("name") title: String,
-        @Query("startDate") fromDate: String,
-        @Query("userIdList") friends: ArrayList<User>,
+        @Body groupPostReq: groupPostReq,
         @Header("Authorization") accessToken: String
     ): Call<Unit>
 

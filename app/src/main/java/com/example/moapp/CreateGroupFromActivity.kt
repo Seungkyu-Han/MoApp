@@ -5,13 +5,25 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.moapp.databinding.ActivityCreateGroupBinding
 import com.example.moapp.databinding.ActivityCreateGroupToBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Month
 import java.time.Year
 
 class CreateGroupFromActivity : AppCompatActivity() {
+
+    private val retrofit: Retrofit = Retrofit.Builder().baseUrl("https://hangang-bike.site/")
+        .addConverterFactory(GsonConverterFactory.create()).build()
+    private val service = retrofit.create(RetrofitService::class.java)
+    private val token = PrefApp.prefs.getString("accessToken", "default")
+
     var sYear: Int = 0
     var sMonth: Int = 0
     var sDay: Int = 0
@@ -19,7 +31,7 @@ class CreateGroupFromActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityCreateGroupBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_create_group)
+        setContentView(binding.root)
 
         supportActionBar?.setTitle("시작일 설정")
 
@@ -30,7 +42,6 @@ class CreateGroupFromActivity : AppCompatActivity() {
             sYear = year.toInt()
             sMonth = monthOfYear.toInt()
             sDay = dayOfMonth.toInt()
-            Log.d("park", "$sYear $sMonth $sDay")
         }
 
         binding.setFromBtn.setOnClickListener {

@@ -1,6 +1,7 @@
 package com.example.moapp.model
 
 import com.example.moapp.User
+import com.google.gson.annotations.SerializedName
 
 data class Group(
     val endDate: String,
@@ -8,4 +9,11 @@ data class Group(
     val name: String,
     val startDate: String,
     val userInfoResList: ArrayList<User>
+)
+
+data class groupPostReq(
+    val endDate: String,
+    val name: String,
+    val startDate: String,
+    val userIdList: ArrayList<Int>
 )

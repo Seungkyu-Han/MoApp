@@ -18,7 +18,6 @@ class CreateGroupToActivity : AppCompatActivity() {
         val binding = ActivityCreateGroupToBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
         supportActionBar?.setTitle("종료일 설정")
 
         val fromYear = intent.getIntExtra("fromYear", 0)
@@ -42,10 +41,10 @@ class CreateGroupToActivity : AppCompatActivity() {
             if (sYear != 0 || sMonth != 0 || sDay != 0) {
                 val intent = Intent(this, CreateGroupTitleActivity::class.java)
                 intent.putExtra("fromYear", fromYear)
-                intent.putExtra("fromMonth", fromMonth)
+                intent.putExtra("fromMonth", fromMonth + 1)
                 intent.putExtra("fromDay", fromDay)
                 intent.putExtra("toYear", sYear)
-                intent.putExtra("toMonth", sMonth)
+                intent.putExtra("toMonth", sMonth + 1)
                 intent.putExtra("toDay", sDay)
                 startActivity(intent)
                 finish()
