@@ -48,9 +48,6 @@ class SettingActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val toolbar: Toolbar = findViewById(R.id.toolbar_settings)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = ""
         val backArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
         supportActionBar?.setHomeAsUpIndicator(backArrow)

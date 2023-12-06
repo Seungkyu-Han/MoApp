@@ -4,19 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar1"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#C62E2E">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="개인 일정"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </androidx.appcompat.widget.Toolbar>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -66,7 +53,7 @@
                 android:columnCount="3"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="40dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="60dp"
                 android:layout_marginTop="15dp">
             </GridLayout>
 

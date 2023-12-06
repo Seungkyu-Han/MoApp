@@ -55,19 +55,14 @@ class ScheduleDetail : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedule_detail)
 
-
-        val toolbar: Toolbar = findViewById(R.id.toolbar1)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = ""
         val upArrow = resources.getDrawable(R.drawable.ic_back_arrow, null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
         supportActionBar?.setHomeAsUpIndicator(upArrow)
-//충돌 지점
-        supportActionBar?.title = "Schedule"
+
+        supportActionBar?.title = "My Schedule"
         val colorCode = "#C62E2E" // 색상 코드
         val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
         supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
-        //supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         var mainIntent = Intent(this, MainActivity::class.java)
         val scheduleIntent = Intent(this, ScheduleDetail::class.java)
