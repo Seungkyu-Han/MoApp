@@ -17,3 +17,10 @@ data class groupPostReq(
     val startDate: String,
     val userIdList: ArrayList<Int>
 )
+
+data class shareSchedulePostUserScheduleReq(
+    val date: String,
+    val endTime: Int,
+    val id: Int,
+    val startTime: Int,
+)
