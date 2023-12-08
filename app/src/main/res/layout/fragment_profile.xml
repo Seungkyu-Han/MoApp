@@ -12,22 +12,24 @@
         android:layout_gravity="center_horizontal"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_foreground" />
+    <TextView
+        android:id="@+id/profileTextviewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:textSize="15dp"
+        android:text="Name: " />
 
     <TextView
         android:id="@+id/profileTextviewId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="ID: " />
 
-    <TextView
-        android:id="@+id/profileTextviewName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:text="Name: " />
+
 
     <Button
         android:id="@+id/remove_friend_btn"

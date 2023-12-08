@@ -162,7 +162,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateUserInfoViews() {
         // 사용자 정보를 뷰에 업데이트하는 코드
         binding.userName.text = userInfo.name
-        binding.userId.text = userInfo.id.toString()
+//        binding.userId.text = userInfo.id.toString()
         Glide.with(binding.userImageview.context)
             .load(userInfo.img)
             .into(binding.userImageview)
