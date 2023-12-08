@@ -107,6 +107,9 @@ interface RetrofitService {
     @GET("/api/share/share")
     fun getShareList(): Call<List<ShareRes>>
 
+    @GET("/api/share/near")
+    fun getNearSchedule(): Call<ScheduleEvent>
+
     @GET("/api/user/info")
     fun getUserInfo(
         @Header("Authorization") accessToken: String

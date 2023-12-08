@@ -27,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="15dp"
         android:text="ID: " />
 
 
@@ -36,6 +37,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="친구 삭제"/>
+        android:text="친구 삭제"
+        android:textSize="12dp"
+        />
 
 </LinearLayout>
