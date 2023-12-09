@@ -187,7 +187,7 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         when (item.itemId) {
             R.id.action_add_group -> {
                 // click on add group, go to CreateGroupFromActivity.kt
-                var addGroupIntent = Intent(this, CreateGroupFromActivity::class.java)
+                var addGroupIntent = Intent(this, CreateGroupTitleActivity::class.java)
                 startActivity(addGroupIntent)
                 return true
             }
