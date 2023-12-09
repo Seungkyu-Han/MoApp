@@ -2,6 +2,7 @@ package com.example.moapp
 
 import com.example.moapp.model.Group
 import com.example.moapp.model.groupPostReq
+import com.example.moapp.model.shareSchedulePostUserScheduleReq
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -107,6 +108,9 @@ interface RetrofitService {
     @GET("/api/share/share")
     fun getShareList(): Call<List<ShareRes>>
 
+    @GET("/api/share/near")
+    fun getNearSchedule(): Call<ScheduleEvent>
+
     @GET("/api/user/info")
     fun getUserInfo(
         @Header("Authorization") accessToken: String
@@ -139,4 +143,10 @@ interface RetrofitService {
         @Query("id") groupId: Int,
         @Header("Authorization") accessToken: String
     ): Call<ArrayList<ArrayList<Boolean>>>
+
+    @POST("/api/share-schedule/user-schedule")
+    fun addShareSchedule(
+        @Body shareSchedulePostUserScheduleReq: shareSchedulePostUserScheduleReq,
+        @Header("Authorization") accessToken: String
+    ): Call<Unit>
 }

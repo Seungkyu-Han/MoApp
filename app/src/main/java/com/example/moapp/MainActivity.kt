@@ -17,6 +17,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var userInfo:User
     private lateinit var adapter: FriendsAdapter
+    private lateinit var nearSchedule:ScheduleEvent
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         //------------------------------------------------------------------------------
         getFriends()
         getUserInfo()
+        getNearSchedule()
         setContentView(binding.root)
 
         binding.bottomBar.friendsBtn.setOnClickListener {
@@ -159,14 +163,59 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun updateUserInfoViews() {
         // 사용자 정보를 뷰에 업데이트하는 코드
         binding.userName.text = userInfo.name
-        binding.userId.text = userInfo.id.toString()
+//        binding.userId.text = userInfo.id.toString()
         Glide.with(binding.userImageview.context)
             .load(userInfo.img)
             .into(binding.userImageview)
     }
+    private fun getNearSchedule() {
+        val call = retrofitService.getNearSchedule()
+        call.enqueue(object : Callback<ScheduleEvent> {
+            override fun onResponse(call: Call<ScheduleEvent>, response: Response<ScheduleEvent>) {
+
+                if (response.isSuccessful) {
+                    val info = response.body()
+                    info?.let { schedule ->
+                        // API 응답을 처리하는 코드
+                        nearSchedule =schedule
+                        updateUserNearSchedule()
+                    }
+                } else {
+                    // 에러 처리
+                    Log.e("henry", "getNearSchedule API request error: ${response.message()}")
+
+                }
+            }
+            override fun onFailure(call: Call<ScheduleEvent>, t: Throwable) {
+                // 에러 처리
+                Log.e("henry", "getNearSchedule API request failure: ${t.message}")
+                t.printStackTrace()
+            }
+        })
+    }
+
+    private fun updateUserNearSchedule() {
+        // 사용자 정보를 뷰에 업데이트하는 코드
+        // 날짜 및 시간 형식 변경
+        val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputDateFormat = SimpleDateFormat("MM월 d일 (E)", Locale.getDefault())
+
+        val date: Date? = inputDateFormat.parse(nearSchedule.day)
+        val formattedDate = date?.let { outputDateFormat.format(it) } ?: "날짜 형식 오류"
+
+        val formattedStartTime = String.format("%02d:00", nearSchedule.startTime)
+        val formattedEndTime = String.format("%02d:59", nearSchedule.endTime)
+
+        binding.nearScheduleDate.text = formattedDate
+        binding.nearScheduleStarttime.text = formattedStartTime
+        binding.nearScheduleStarttime.text = formattedEndTime
+        binding.nearScheduleContent.text = nearSchedule.eventName
+    }
+
     private fun getFriends() {
         // Retrofit을 사용하여 API 호출
         val call = retrofitService.getFriendsList()
