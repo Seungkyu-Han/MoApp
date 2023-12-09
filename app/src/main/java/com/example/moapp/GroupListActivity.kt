@@ -6,6 +6,8 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,10 +22,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 class ShareViewHolder(val binding: ItemChatBinding) :
     RecyclerView.ViewHolder(binding.root)
-class ShareAdapter(var shareRes: List<ShareRes>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ShareAdapter(var shareRes: List<ShareRes>, private val onItemClick: (Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     // 항목의 개수를 판단하기 위해 자동 호출
     override fun getItemCount(): Int {
         return shareRes.size
@@ -60,6 +61,11 @@ class ShareAdapter(var shareRes: List<ShareRes>) : RecyclerView.Adapter<Recycler
                 .load(it)
                 .into(binding.chatItemImageview)
         }
+
+        // Set click listener for each item in the RecyclerView
+        holder.itemView.setOnClickListener {
+            onItemClick.invoke(shareRes[position].id) // Pass groupId to onItemClick
+        }
     }
     fun updateData(newList: List<ShareRes>) {
         shareRes = newList
@@ -76,11 +82,10 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        supportActionBar?.title = "Chats"
+        supportActionBar?.title = "Group"
         val colorCode = "#C62E2E" // 색상 코드
         val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
         supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true) // back arrow
 
         val binding = ActivityChatListBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
 
@@ -89,9 +94,6 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         var chatListIntent = Intent(this, GroupListActivity::class.java)
         var settingIntent = Intent(this, SettingActivity::class.java)
 
-        // 어뎁터 초기화
-        adapter = ShareAdapter(emptyList())
-        binding.chatRecyclerView.adapter = adapter
 
         // 리사이클러 뷰에 LayoutManager 적용
         binding.chatRecyclerView.layoutManager = LinearLayoutManager(this) // activity를 사용하므로 this 사용
@@ -134,6 +136,14 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
         binding.bottomBar.settingsBtn.setOnClickListener {
             startActivity(settingIntent)
         }
+
+        adapter = ShareAdapter(emptyList()) { groupId ->
+            val groupScheduleIntent = Intent(this, GroupScheduleActivity::class.java)
+            groupScheduleIntent.putExtra("groupId", groupId) // Pass groupId to GroupScheduleActivity
+            startActivity(groupScheduleIntent)
+        }
+        // Set the adapter for the RecyclerView
+        binding.chatRecyclerView.adapter = adapter
     }
 
     private fun getChatList() {
@@ -165,6 +175,24 @@ class GroupListActivity : AppCompatActivity() { // FragmentActivity에서 AppCom
     override fun onSupportNavigateUp(): Boolean {
         startActivity(Intent(this, MainActivity::class.java))
         return true
+    }
+
+    // action bar - add group button
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.add_group_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_add_group -> {
+                // click on add group, go to CreateGroupFromActivity.kt
+                var addGroupIntent = Intent(this, CreateGroupFromActivity::class.java)
+                startActivity(addGroupIntent)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
 }

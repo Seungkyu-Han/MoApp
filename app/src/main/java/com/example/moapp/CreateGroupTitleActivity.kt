@@ -1,5 +1,7 @@
 package com.example.moapp
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -27,6 +29,11 @@ class CreateGroupTitleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityCreateGroupTitleBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar?.title = "Create Group"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         var fromDate: String
         var toDate: String
