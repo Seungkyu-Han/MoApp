@@ -51,7 +51,7 @@ class FriendsAdapter(var userModels: List<User>) : RecyclerView.Adapter<Recycler
 
         // 데이터 바인딩 및 처리 코드 추가
         binding.friendsTextviewTitle.text = userModels[position].name
-        binding.friendsTextviewId.text = "id : " + userModels[position].id.toString()
+//        binding.friendsTextviewId.text = "id : " + userModels[position].id.toString()
         Glide.with(binding.friendsItemImageview.context)
             .load(userModels[position].img)
             .into(binding.friendsItemImageview)
