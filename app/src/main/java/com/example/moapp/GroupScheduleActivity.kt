@@ -42,9 +42,10 @@ class GroupScheduleActivity : AppCompatActivity() {
         val groupId = intent.getIntExtra("groupId", -1)
         var calDate: Int
 
-//        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setTitle("그룹 일정")
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "그룹 일정"
+        val colorCode = "#C62E2E" // 색상 코드
+        val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
         service.getGroupInfo(groupId, "Bearer $token").enqueue(object : Callback<Group> {
             override fun onResponse(call: Call<Group>, response: Response<Group>) {
