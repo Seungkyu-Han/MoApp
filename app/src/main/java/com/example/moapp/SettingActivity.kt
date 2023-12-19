@@ -207,6 +207,13 @@ class SettingActivity : AppCompatActivity() {
             }
         }
 
+        binding.logout.setOnClickListener {
+            PrefApp.prefs.setString("accessToken", "")
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            finish()
+        }
 
         service.getUserInfo("Bearer ${PrefApp.prefs.getString("accessToken", "default")}")?.enqueue(
             object : Callback<UserInfo> {
