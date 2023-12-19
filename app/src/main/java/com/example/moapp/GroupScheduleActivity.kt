@@ -122,6 +122,13 @@ class GroupScheduleActivity : AppCompatActivity() {
                         refreshSchedule(calDate, binding)
                     }
 
+                    binding.reqBtn.setOnClickListener {
+                        val intent = Intent(this@GroupScheduleActivity, RequestActivity::class.java)
+                        intent.putExtra("groupId", groupId)
+                        startActivity(intent)
+                        refreshSchedule(calDate, binding)
+                    }
+
                 } else {
                     Toast.makeText(this@GroupScheduleActivity, "서버 오류", Toast.LENGTH_SHORT).show()
                 }
