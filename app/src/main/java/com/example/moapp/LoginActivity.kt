@@ -57,6 +57,9 @@ class LoginActivity : AppCompatActivity() {
         val binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.hide()
+
+
         KakaoSdk.init(this, "19f26b64744912066f59c25751bdfd57")
 
         Log.d("park", "keyhash: ${Utility.getKeyHash(this)}")
