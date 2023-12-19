@@ -37,13 +37,30 @@
     </ScrollView>
 
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/addBtn"
-        android:layout_width="100dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:background="@drawable/bg_button"
-        android:text="일정 추가"
-        android:textColor="@color/white"
-        android:textSize="15sp" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/addBtn"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_button"
+            android:text="일정 추가"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/reqBtn"
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_button"
+            android:text="일정 요청"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
 </LinearLayout>
