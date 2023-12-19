@@ -24,3 +24,10 @@ data class shareSchedulePostUserScheduleReq(
     val id: Int,
     val startTime: Int,
 )
+
+data class shareSchedulePostReq(
+    val date: String,
+    val endTime: Int,
+    val share_id: Int,
+    val startTime: Int,
+)
