@@ -17,17 +17,28 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 class CreateGroupTitleActivity : AppCompatActivity() {
     private val retrofit: Retrofit = Retrofit.Builder().baseUrl("https://hangang-bike.site/")
         .addConverterFactory(GsonConverterFactory.create()).build()
     private val service = retrofit.create(RetrofitService::class.java)
     private val token = PrefApp.prefs.getString("accessToken", "default")
+    private lateinit var binding: ActivityCreateGroupTitleBinding
+    private var clickCount = 0
+    private var fromYear = 0
+    private var fromMonth = 0
+    private var fromDay = 0
+    private var toYear = 0
+    private var toMonth = 0
+    private var toDay = 0
+    private var toDate = ""
+    private var fromDate = ""
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityCreateGroupTitleBinding.inflate(layoutInflater)
+        binding = ActivityCreateGroupTitleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.title = "Create Group"
@@ -35,32 +46,52 @@ class CreateGroupTitleActivity : AppCompatActivity() {
         val color = Color.parseColor(colorCode) // 색상 코드를 Color 객체로 변환
         supportActionBar?.setBackgroundDrawable(ColorDrawable(color))
 
-        var fromDate: String
-        var toDate: String
+        val todayCalendar = Calendar.getInstance()
+        binding.calendarView.minDate = todayCalendar.timeInMillis
+        binding.calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            clickCount++
+            val calendar = Calendar.getInstance()
+            calendar.set(year, month, dayOfMonth)
+            binding.calendarView.maxDate = calendar.timeInMillis  + (7 * 1000 * 60 * 60 * 24)
+            if (clickCount % 2 != 0) {
+                fromYear = year
+                fromMonth = month + 1
+                fromDay = dayOfMonth
+                fromDate = "$fromYear-${String.format("%02d", fromMonth)}-${String.format("%02d", fromDay)}"
+                binding.fromDate.text = fromDate
+                binding.toDate.text = ""
+            } else {
+                toYear = year
+                toMonth = month + 1
+                toDay = dayOfMonth
+                toDate = "$toYear-${String.format("%02d", toMonth)}-${String.format("%02d", toDay)}"
+                binding.toDate.text = toDate
 
-        if (intent.getIntExtra("fromDay", 0).toString().length <= 1) {
-            fromDate = "${intent.getIntExtra("fromYear", 0)}-" +
-                    "${intent.getIntExtra("fromMonth", 0)}-" +
-                    "0${intent.getIntExtra("fromDay", 0)}"
-        } else {
-            fromDate = "${intent.getIntExtra("fromYear", 0)}-" +
-                    "${intent.getIntExtra("fromMonth", 0)}-" +
-                    "${intent.getIntExtra("fromDay", 0)}"
+                val fromDateCalendar = Calendar.getInstance().apply {
+                    set(fromYear, fromMonth, fromDay)
+                }
+                val toDateCalendar = Calendar.getInstance().apply {
+                    set(toYear, toMonth, toDay)
+                }
+
+                val nextSevenDays = Calendar.getInstance().apply {
+                    time = fromDateCalendar.time
+                    add(Calendar.DAY_OF_MONTH, 6)
+                }
+
+                if (toDateCalendar.before(fromDateCalendar) || toDateCalendar.after(nextSevenDays)) {
+                    val errorMessage = if (toDateCalendar.before(fromDateCalendar)) {
+                        "에러: 시작일 > 종료일"
+                    } else {
+                        "시작일부터 7일 이내의 날짜를 선택하세요."
+                    }
+                    Toast.makeText(this@CreateGroupTitleActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                    binding.toDate.text = ""
+                    binding.fromDate.text = ""
+                }
+            }
         }
 
-        if (intent.getIntExtra("toDay", 0).toString().length <= 1) {
-            toDate = "${intent.getIntExtra("toYear", 0)}-" +
-                    "${intent.getIntExtra("toMonth", 0)}-" +
-                    "0${intent.getIntExtra("toDay", 0)}"
-        } else {
-            toDate = "${intent.getIntExtra("toYear", 0)}-" +
-                    "${intent.getIntExtra("toMonth", 0)}-" +
-                    "${intent.getIntExtra("toDay", 0)}"
-        }
-
-
-        binding.fromDate.text = fromDate
-        binding.toDate.text = toDate
 
         var friends: ArrayList<User>?
         var checkedId: ArrayList<Int>
@@ -114,7 +145,5 @@ class CreateGroupTitleActivity : AppCompatActivity() {
                 Toast.makeText(this@CreateGroupTitleActivity, "잠시후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
             }
         })
-
-
     }
 }
