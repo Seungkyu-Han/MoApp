@@ -112,7 +112,7 @@ interface RetrofitService {
     fun getShareList(): Call<List<ShareRes>>
 
     @GET("/api/share/near")
-    fun getNearSchedule(): Call<ScheduleEvent>
+    fun getNearSchedule(): Call<nearEvent>
 
     @GET("/api/user/info")
     fun getUserInfo(

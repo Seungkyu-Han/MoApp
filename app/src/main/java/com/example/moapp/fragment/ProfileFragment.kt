@@ -42,7 +42,7 @@ class ProfileFragment : DialogFragment() {
             val userImg = it.getString(ARG_USER_IMG, "")
 
             // 프로필 정보를 화면에 표시
-            binding.profileTextviewId.text = "ID: $userId"
+            // binding.profileTextviewId.text = "ID: $userId"
             binding.profileTextviewName.text = "Name: $userName"
             Glide.with(binding.profileImageview.context)
                 .load(userImg)

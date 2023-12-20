@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var userInfo:User
     private lateinit var adapter: FriendsAdapter
-    private lateinit var nearSchedule:ScheduleEvent
+    private lateinit var nearSchedule:nearEvent
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         //------------------------------------------------------------------------------
         getFriends()
         getUserInfo()
-        //getNearSchedule()
+        getNearSchedule()
         setContentView(binding.root)
 
         binding.bottomBar.friendsBtn.setOnClickListener {
@@ -181,14 +181,16 @@ class MainActivity : AppCompatActivity() {
     }
     private fun getNearSchedule() {
         val call = retrofitService.getNearSchedule()
-        call.enqueue(object : Callback<ScheduleEvent> {
-            override fun onResponse(call: Call<ScheduleEvent>, response: Response<ScheduleEvent>) {
+        call.enqueue(object : Callback<nearEvent> {
+            override fun onResponse(call: Call<nearEvent>, response: Response<nearEvent>) {
 
                 if (response.isSuccessful) {
                     val info = response.body()
                     info?.let { schedule ->
                         // API 응답을 처리하는 코드
+                        Log.d("henry", "뭔가 했음")
                         nearSchedule =schedule
+                        Log.e("henry", "${nearSchedule.toString()}")
                         updateUserNearSchedule()
                     }
                 } else {
@@ -197,7 +199,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
             }
-            override fun onFailure(call: Call<ScheduleEvent>, t: Throwable) {
+            override fun onFailure(call: Call<nearEvent>, t: Throwable) {
                 // 에러 처리
                 Log.e("henry", "getNearSchedule API request failure: ${t.message}")
                 t.printStackTrace()
@@ -211,16 +213,17 @@ class MainActivity : AppCompatActivity() {
         val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val outputDateFormat = SimpleDateFormat("MM월 d일 (E)", Locale.getDefault())
 
-        val date: Date? = inputDateFormat.parse(nearSchedule.day)
+        val date: Date? = inputDateFormat.parse(nearSchedule.date)
         val formattedDate = date?.let { outputDateFormat.format(it) } ?: "날짜 형식 오류"
 
         val formattedStartTime = String.format("%02d:00", nearSchedule.startTime)
-        val formattedEndTime = String.format("%02d:59", nearSchedule.endTime)
+        val formattedEndTime = String.format("%02d:00", nearSchedule.endTime + 1)
+
 
         binding.nearScheduleDate.text = formattedDate
         binding.nearScheduleStarttime.text = formattedStartTime
-        binding.nearScheduleStarttime.text = formattedEndTime
-        binding.nearScheduleContent.text = nearSchedule.eventName
+        binding.nearScheduleEndtime.text = formattedEndTime
+        binding.nearScheduleContent.text = nearSchedule.name
     }
 
     private fun getFriends() {

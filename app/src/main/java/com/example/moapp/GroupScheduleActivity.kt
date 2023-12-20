@@ -145,6 +145,7 @@ class GroupScheduleActivity : AppCompatActivity() {
                                     }
                                 }
                                 Log.d("park", "start = $start end = $end")
+                                Log.d("park", "state ${response.body()?.state}")
 
                                 if (response.body()?.state == "Req") {
                                     if (start != null && end != null) {
@@ -216,8 +217,8 @@ class GroupScheduleActivity : AppCompatActivity() {
                                 } else if (response.body()?.state == "Active") {
                                     if (start != null && end != null) {
                                         for (i: Int in start..end) {
-                                            val row = binding.schedule.getChildAt(idx) as TableRow
-                                            val target = row.getChildAt(i + 1) as TextView
+                                            val row = binding.schedule.getChildAt(i + 1) as TableRow
+                                            val target = row.getChildAt(idx) as TextView
                                             target.setBackgroundColor(Color.GREEN)
                                         }
                                     }

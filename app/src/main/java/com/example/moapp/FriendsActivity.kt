@@ -62,7 +62,7 @@ class FriendsAdapter(var userModels: List<User>) : RecyclerView.Adapter<Recycler
             val profileFragment = ProfileFragment()
 
             val args = Bundle()
-            args.putInt(ProfileFragment.ARG_USER_ID, userModels[position].id)
+            // args.putInt(ProfileFragment.ARG_USER_ID, userModels[position].id)
             args.putString(ProfileFragment.ARG_USER_NAME, userModels[position].name)
             args.putString(ProfileFragment.ARG_USER_IMG, userModels[position].img)
             profileFragment.arguments = args
