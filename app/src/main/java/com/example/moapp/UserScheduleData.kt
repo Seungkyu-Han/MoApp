@@ -8,6 +8,14 @@ data class ScheduleEvent(   //represent scheduleEvents[] in server
     val eventName: String
 )
 
+data class nearEvent(   //represent scheduleEvents[] in server
+    val id: Int,
+    val date: String,
+    val startTime: Int,
+    val endTime: Int,
+    val name: String
+)
+
 data class GetScheduleResponse(
     val scheduleEvents: List<ScheduleEvent>
 )

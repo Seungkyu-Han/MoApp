@@ -1,6 +1,7 @@
 package com.example.moapp
 
 import android.app.ActionBar.LayoutParams
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TableRow
@@ -19,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.moapp.databinding.ActivityGroupScheduleBinding
 import com.example.moapp.model.Group
+import com.example.moapp.model.requstInfo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +39,7 @@ class GroupScheduleActivity : AppCompatActivity() {
     private var groupId: Int = 0
     lateinit var groupInfo: Group
     var calDate: Int = 0
+    var dateArray = ArrayList<String>()
     lateinit var binding: ActivityGroupScheduleBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +63,6 @@ class GroupScheduleActivity : AppCompatActivity() {
                     binding.title.text = groupInfo.name
 
                     // Table Initialize
-                    val dateArray = ArrayList<String>()
                     val row = TableRow(this@GroupScheduleActivity)
 
                     val textView = TextView(this@GroupScheduleActivity)
@@ -115,19 +118,138 @@ class GroupScheduleActivity : AppCompatActivity() {
 
                     refreshSchedule(calDate, binding)
 
-                    binding.addBtn.setOnClickListener {
-                        val intent = Intent(this@GroupScheduleActivity, AddGroupScheduleActivity::class.java)
-                        intent.putExtra("groupId", groupId)
-                        startActivity(intent)
-                        refreshSchedule(calDate, binding)
-                    }
+                    service.getRequestedSchedule(groupId, "Bearer $token").enqueue(object : Callback<requstInfo> {
+                        override fun onResponse(
+                            call: Call<requstInfo>,
+                            response: Response<requstInfo>
+                        ) {
+                            if (response.isSuccessful) {
+                                val start = response.body()?.startTime
+                                val end = response.body()?.endTime
+                                val getDate = response.body()?.date
 
-                    binding.reqBtn.setOnClickListener {
-                        val intent = Intent(this@GroupScheduleActivity, RequestActivity::class.java)
-                        intent.putExtra("groupId", groupId)
-                        startActivity(intent)
-                        refreshSchedule(calDate, binding)
-                    }
+                                val reqDate = Calendar.getInstance()
+
+                                val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+                                val date = dateFormat.parse(getDate)
+
+                                reqDate.time = date
+
+                                var month = reqDate.get(Calendar.MONTH) + 1
+
+                                var idx: Int = -1
+                                for (i: Int in 0..calDate) {
+                                    if (dateArray[i] == "${month}/${reqDate.get(Calendar.DAY_OF_MONTH)}") {
+                                        idx = i
+                                        break
+                                    }
+                                }
+                                Log.d("park", "start = $start end = $end")
+                                Log.d("park", "state ${response.body()?.state}")
+
+                                if (response.body()?.state == "Req") {
+                                    if (start != null && end != null) {
+                                        for (i: Int in start..end) {
+                                            val row = binding.schedule.getChildAt(i + 1) as TableRow
+                                            val target = row.getChildAt(idx + 1) as TextView
+                                            target.setBackgroundColor(Color.YELLOW)
+                                        }
+                                    }
+
+
+
+                                    binding.addBtn.visibility = View.GONE
+                                    binding.reqBtn.text = "일정 확인"
+                                    binding.reqBtn.setOnClickListener {
+                                        val builder = AlertDialog.Builder(this@GroupScheduleActivity)
+                                            .setTitle("확인")
+                                            .setMessage("일정을 수락하시겠습니까?")
+                                            .setPositiveButton("수락", DialogInterface.OnClickListener { dialog, which ->
+                                                service.reqResponse(true, groupId, "Bearer $token").enqueue(object : Callback<Unit> {
+                                                    override fun onResponse(
+                                                        call: Call<Unit>,
+                                                        response: Response<Unit>
+                                                    ) {
+                                                        if (response.isSuccessful) {
+                                                            finish()
+                                                        } else {
+                                                            Toast.makeText(this@GroupScheduleActivity,
+                                                                "서버 오류입니다.", Toast.LENGTH_SHORT).show()
+                                                            Log.d("park", response.code().toString())
+                                                        }
+                                                    }
+
+                                                    override fun onFailure(
+                                                        call: Call<Unit>,
+                                                        t: Throwable
+                                                    ) {
+                                                        Toast.makeText(this@GroupScheduleActivity,
+                                                            "일시적 오류입니다.", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                })
+                                            })
+                                            .setNegativeButton("거절", DialogInterface.OnClickListener { dialog, which ->
+                                                service.reqResponse(false, groupId, "Bearer $token").enqueue(object : Callback<Unit> {
+                                                    override fun onResponse(
+                                                        call: Call<Unit>,
+                                                        response: Response<Unit>
+                                                    ) {
+                                                        if (response.isSuccessful) {
+                                                            finish()
+                                                        } else {
+                                                            Toast.makeText(this@GroupScheduleActivity,
+                                                                "서버 오류입니다.", Toast.LENGTH_SHORT).show()
+                                                            Log.d("park", response.code().toString())
+                                                        }
+                                                    }
+
+                                                    override fun onFailure(
+                                                        call: Call<Unit>,
+                                                        t: Throwable
+                                                    ) {
+                                                        Toast.makeText(this@GroupScheduleActivity,
+                                                            "일시적 오류입니다.", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                })
+                                            })
+                                        builder.show()
+                                    }
+                                } else if (response.body()?.state == "Active") {
+                                    if (start != null && end != null) {
+                                        for (i: Int in start..end) {
+                                            val row = binding.schedule.getChildAt(i + 1) as TableRow
+                                            val target = row.getChildAt(idx) as TextView
+                                            target.setBackgroundColor(Color.GREEN)
+                                        }
+                                    }
+
+                                    binding.addBtn.visibility = View.GONE
+                                    binding.reqBtn.visibility = View.GONE
+                                }
+                                else {
+                                    binding.addBtn.setOnClickListener {
+                                        val intent = Intent(this@GroupScheduleActivity, AddGroupScheduleActivity::class.java)
+                                        intent.putExtra("groupId", groupId)
+                                        startActivity(intent)
+                                        refreshSchedule(calDate, binding)
+                                    }
+
+                                    binding.reqBtn.setOnClickListener {
+                                        val intent = Intent(this@GroupScheduleActivity, RequestActivity::class.java)
+                                        intent.putExtra("groupId", groupId)
+                                        startActivity(intent)
+                                        refreshSchedule(calDate, binding)
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<requstInfo>, t: Throwable) {
+                            Toast.makeText(this@GroupScheduleActivity, "잠시후 다시 이용해주세요.", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+
+
 
                 } else {
                     Toast.makeText(this@GroupScheduleActivity, "서버 오류", Toast.LENGTH_SHORT).show()

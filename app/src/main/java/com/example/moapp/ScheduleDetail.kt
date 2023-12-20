@@ -138,7 +138,7 @@ class ScheduleDetail : AppCompatActivity() {
                     val scheduleResponse = response.body()
                     scheduleResponse?.let { scheduleEventResponse ->
                         for (scheduleEvent in scheduleEventResponse.scheduleEvents) {
-                            Log.d("hien", "ID: ${scheduleEvent.id}, Day: ${scheduleEvent.day}, Event: ${scheduleEvent.eventName}, start: ${scheduleEvent.startTime}, end: ${scheduleEvent.endTime}")
+                            // Log.d("hien", "ID: ${scheduleEvent.id}, Day: ${scheduleEvent.date}, Event: ${scheduleEvent.name}, start: ${scheduleEvent.startTime}, end: ${scheduleEvent.endTime}")
 
                             // Update scheduleTable with scheduleEvent data
                             val color = getColor()

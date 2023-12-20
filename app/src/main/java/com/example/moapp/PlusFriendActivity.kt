@@ -59,7 +59,7 @@ class FriendRequestAdapter(
         val binding = holder.binding
 
         // 데이터 바인딩 및 처리 코드 추가
-        binding.requestItemTextviewId.text = "id : " + userModels[position].id.toString()
+        // binding.requestItemTextviewId.text = "id : " + userModels[position].id.toString()
         binding.requestTextviewTitle.text = userModels[position].name
         Glide.with(binding.requestItemImageview.context)
             .load(userModels[position].img)
