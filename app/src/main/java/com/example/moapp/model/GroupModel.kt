@@ -31,3 +31,10 @@ data class shareSchedulePostReq(
     val share_id: Int,
     val startTime: Int,
 )
+
+data class requstInfo(
+    val startTime: Int,
+    val endTime: Int,
+    val date: String,
+    val state: String
+)
