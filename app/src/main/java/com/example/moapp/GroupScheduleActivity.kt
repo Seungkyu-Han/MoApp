@@ -218,7 +218,7 @@ class GroupScheduleActivity : AppCompatActivity() {
                                     if (start != null && end != null) {
                                         for (i: Int in start..end) {
                                             val row = binding.schedule.getChildAt(i + 1) as TableRow
-                                            val target = row.getChildAt(idx) as TextView
+                                            val target = row.getChildAt(idx + 1) as TextView
                                             target.setBackgroundColor(Color.GREEN)
                                         }
                                     }
