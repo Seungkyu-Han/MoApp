@@ -1,16 +1,25 @@
 package com.example.moapp
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.AudioAttributes
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.moapp.databinding.ActivityMainBinding
+import com.example.moapp.model.MeetingInfo
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -19,6 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.absoluteValue
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -36,7 +46,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater) // 레이아웃 인플레이터 변경
         supportActionBar?.title = "Friends"
         val colorCode = "#C62E2E" // 색상 코드
@@ -55,9 +64,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                     if (response.isSuccessful) {
                         Log.d("park", "자동 로그인 되었습니다.")
-//                        button2.setOnClickListener{
-//                            startActivity(settingIntent)
-//                        }
+                        getChatList()   // to show meeting noti
+                        requestedFriend()  // to show friend noti
                     }
                     else {
                         Log.d("park", "자동 로그인 안됨.")
@@ -70,7 +78,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
-
         // 어뎁터 초기화
         adapter = FriendsAdapter(emptyList())
         binding.recyclerView.adapter = adapter
@@ -103,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         //------------------------------------------------------------------------------
         getFriends()
         getUserInfo()
-        getNearSchedule()
+        //getNearSchedule()
         setContentView(binding.root)
 
         binding.bottomBar.friendsBtn.setOnClickListener {
@@ -238,5 +245,163 @@ class MainActivity : AppCompatActivity() {
                 Log.e("henry", "getFriends API request failure: ${t.message}")
             }
         })
+    }
+
+    //add friend notifications
+    private fun requestedFriend() {
+        val call = retrofitService.getRequestFriend()
+        call.enqueue(object : Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                if (response.isSuccessful) {
+                    val userList = response.body()
+                    Log.d("hien", "Received List: $userList")
+                    if (userList != null) {
+                        friendNoti(userList)
+                    }
+                } else {
+                    Log.e("hien", "requestFriend API request error: ${response.message()}")
+
+                }
+            }
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                Log.e("hien", "requestFriend API request failure: ${t.message}")
+                t.printStackTrace()
+            }
+        })
+    }
+
+    fun friendNoti(userList: List<User>) {
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        for (user in userList) {
+            val builder: NotificationCompat.Builder
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // 26 버전 이상
+                val channelId = "add-friend-request-channel"
+                val channelName = "MoApp Add Friend Noti"
+                val channel = NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    setShowBadge(true)
+                    enableVibration(false)
+                    setSound(null, null)
+                }
+                // 채널을 NotificationManager에 등록
+                manager.createNotificationChannel(channel)
+                // 채널을 이용하여 builder 생성
+                builder = NotificationCompat.Builder(this, channelId)
+            } else {
+                // 26 버전 이하
+                builder = NotificationCompat.Builder(this)
+            }
+
+            // 알림의 기본 정보
+            builder.run {
+                setWhen(System.currentTimeMillis())
+                setContentTitle("Friend Request")
+                setContentText("${user.name}님이 친구 추가를 요청했습니다")
+                setSmallIcon(R.drawable.logo)
+                priority = NotificationCompat.PRIORITY_DEFAULT
+                setDefaults(0)
+                setAutoCancel(true)// Close the notification when clicked
+                manager.notify(user.id.hashCode(), builder.build())
+                Log.d("hien", "noti: received add friend request from user: ${user.name}")
+            }
+        }
+    }
+
+    //add meeting notifications
+    private fun getChatList() {
+        val call = retrofitService.getShareList()
+        call.enqueue(object : Callback<List<ShareRes>> {
+            override fun onResponse(call: Call<List<ShareRes>>, response: Response<List<ShareRes>>) {
+                if (response.isSuccessful) {
+                    val chatList = response.body()
+                    chatList?.let { list ->
+                        for (item in list) {
+                            Log.d("hien", "Group ID: ${item.id}")
+                        }
+                        getMeetingInfoForChatList(list)
+                    } ?: Log.e("hien", "Chat List is null")
+                } else {
+                    Log.e("hien", "getChatList API request error: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<List<ShareRes>>, t: Throwable) {
+                Log.e("hien", "getChatList API request failure: ${t.message}")
+            }
+        })
+    }
+
+    private fun getMeetingInfoForChatList(chatList: List<ShareRes>) {
+        chatList.forEach { shareRes ->
+            val groupId = shareRes.id
+            val groupName = shareRes.name
+
+            retrofitService.getMeetingInfo(groupId, "Bearer $authToken")
+                .enqueue(object : Callback<MeetingInfo> {
+                    override fun onResponse(call: Call<MeetingInfo>, response: Response<MeetingInfo>) {
+                        if (response.isSuccessful) {
+                            val meetingInfo = response.body()
+                            meetingInfo?.let {
+                                Log.d("hien", "Meeting State: $groupId: ${it.state}")
+                                // Check if meeting's state is "Req"
+                                if (it.state == "Req") {
+                                    meetingNoti(groupName)
+                                }
+                            }
+                        } else {
+                            Log.e("hien", "getMeetingInfo API request error: ${response.message()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<MeetingInfo>, t: Throwable) {
+                        Log.e("hien", "getMeetingInfo API request failure: ${t.message}")
+                    }
+                })
+        }
+    }
+
+
+    fun meetingNoti(groupName: String) {
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        val builder: NotificationCompat.Builder
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // 26 버전 이상
+            val channelId = "meeting-request-channel"
+            val channelName = "MoApp Meeting Noti"
+            val channel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                setShowBadge(true)
+                enableVibration(false)
+                setSound(null, null)
+            }
+            // 채널을 NotificationManager에 등록
+            manager.createNotificationChannel(channel)
+            // 채널을 이용하여 builder 생성
+            builder = NotificationCompat.Builder(this, channelId)
+        } else {
+            // 26 버전 이하
+            builder = NotificationCompat.Builder(this)
+        }
+
+        // 알림의 기본 정보
+        builder.run {
+            setWhen(System.currentTimeMillis())
+            setContentTitle("Meeting Request")
+            setContentText("$groupName: 새로운 미팅 요청이 있습니다")
+            setSmallIcon(R.drawable.logo)
+            priority = NotificationCompat.PRIORITY_DEFAULT
+            setDefaults(0)
+            setAutoCancel(true)// Close the notification when clicked
+            manager.notify(groupName.hashCode(), builder.build())
+            Log.d("hien","send meeting nofi")
+        }
     }
 }
