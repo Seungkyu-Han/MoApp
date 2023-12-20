@@ -126,16 +126,16 @@ class GroupScheduleActivity : AppCompatActivity() {
                             if (response.isSuccessful) {
                                 val start = response.body()?.startTime
                                 val end = response.body()?.endTime
+                                val getDate = response.body()?.date
 
                                 val reqDate = Calendar.getInstance()
-                                reqDate.set(startDate.year + 1900, startDate.month + 1, startDate.date)
 
-                                var month = 0
-                                if (reqDate.get(Calendar.MONTH) == 0) {
-                                    month = 12
-                                } else {
-                                    month = reqDate.get(Calendar.MONTH)
-                                }
+                                val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+                                val date = dateFormat.parse(getDate)
+
+                                reqDate.time = date
+
+                                var month = reqDate.get(Calendar.MONTH) + 1
 
                                 var idx: Int = -1
                                 for (i: Int in 0..calDate) {
