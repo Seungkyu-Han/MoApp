@@ -1,6 +1,7 @@
 package com.example.moapp
 
 import com.example.moapp.model.Group
+import com.example.moapp.model.MeetingInfo
 import com.example.moapp.model.groupPostReq
 import com.example.moapp.model.requstInfo
 import com.example.moapp.model.shareSchedulePostReq
@@ -170,4 +171,10 @@ interface RetrofitService {
         @Query("id") groupId: Int,
         @Header("Authorization") accessToken: String
     ): Call<Unit>
+
+    @GET("/api/share-schedule/info")
+    fun getMeetingInfo(
+        @Query("id") groupId: Int,
+        @Header("Authorization") accessToken: String
+    ): Call<MeetingInfo>
 }

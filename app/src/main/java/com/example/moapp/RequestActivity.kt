@@ -103,6 +103,8 @@ class RequestActivity : AppCompatActivity() {
                                     response: Response<Unit>
                                 ) {
                                     if (response.isSuccessful) {
+                                        Toast.makeText(this@RequestActivity, "요청했습니다.",
+                                            Toast.LENGTH_SHORT).show()
                                         finish()
                                     } else {
                                         Toast.makeText(this@RequestActivity, "불가능한 시간입니다.",

@@ -38,3 +38,10 @@ data class requstInfo(
     val date: String,
     val state: String
 )
+
+data class MeetingInfo(
+    val startTime: Int,
+    val endTime: Int,
+    val date: String,
+    val state: String
+)
