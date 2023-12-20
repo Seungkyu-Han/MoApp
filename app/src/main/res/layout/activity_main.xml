@@ -65,7 +65,7 @@
                     android:id="@+id/near_schedule_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12월 1일 (화)"
+                    android:text=""
                     android:layout_gravity="center_vertical"
                     android:textColor="#1A1919"
                     android:textStyle="bold"
@@ -78,7 +78,7 @@
                         android:id="@+id/near_schedule_starttime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="12:00"
+                        android:text="00:00"
                         android:textColor="#000000"
                         android:textSize="14sp"/>
                     <TextView
@@ -91,7 +91,7 @@
                         android:id="@+id/near_schedule_endtime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="13:00"
+                        android:text="00:00"
                         android:textColor="#000000"
                         android:textSize="14sp"/>
                 </LinearLayout>
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:text="종혁이 만나기"
+                android:text="일정 없음"
                 android:textColor="#000000"
                 android:textSize="18sp" />
         </LinearLayout>
