@@ -1,0 +1,19 @@
+<!-- res/menu/bottom_navigation_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_friends"
+        android:title="Friends"
+        android:icon="@drawable/person_icon" />
+    <item
+        android:id="@+id/navigation_schedule"
+        android:title="Schedule"
+        android:icon="@drawable/person_icon" />
+    <item
+        android:id="@+id/navigation_chat"
+        android:title="Chat"
+        android:icon="@drawable/person_icon" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:title="Settings"
+        android:icon="@drawable/person_icon" />
+</menu>

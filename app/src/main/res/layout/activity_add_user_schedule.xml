@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- select weekday layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="20dp" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="요일 선택: "
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#C62E2E"/>
+        <Spinner
+            android:id="@+id/daySpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginLeft="5dp"
+            android:entries="@array/days_array" />
+    </LinearLayout>
+
+    <!-- add time range layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="시간 선택: "
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#C62E2E"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="from"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:layout_marginLeft="20dp"
+            android:textColor="#000000"/>
+        <Spinner
+            android:id="@+id/fromTimeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:entries="@array/times_array"
+            android:spinnerMode="dropdown"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="to"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:layout_marginLeft="20dp"
+            android:textColor="#000000"/>
+        <Spinner
+            android:id="@+id/toTimeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:entries="@array/times_array"
+            android:spinnerMode="dropdown"/>
+    </LinearLayout>
+
+    <!-- EditText for ScheduleName -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제목: "
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textColor="#C62E2E"/>
+        <EditText
+            android:id="@+id/scheduleNameText"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:textSize="15sp"
+            android:layout_marginLeft="15dp"
+            android:hint="일정 제목을 입력하세요" />
+    </LinearLayout>
+
+    <!-- add button-->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/addButton"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:text="추가"
+        android:textSize="15sp"
+        android:textColor="@color/white"
+        android:background="@drawable/bg_button"
+        android:layout_marginTop="40dp"/>
+</LinearLayout>

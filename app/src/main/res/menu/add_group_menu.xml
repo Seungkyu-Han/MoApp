@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_add_group"
+        android:title="Add Group"
+        android:icon="@drawable/add_group_btn"
+    app:showAsAction="always" />
+</menu>
+

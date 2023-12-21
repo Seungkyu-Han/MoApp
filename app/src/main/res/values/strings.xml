@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MoApp</string>
+    <string name="drawer_opened">drawer_opend</string>
+    <string name="drawer_closed">drawer_closed</string>
 </resources>
